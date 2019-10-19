@@ -1,23 +1,12 @@
 DC,slowo, slowo1, linia2 slowo3,slowo4
 DC linia 2
-linia 3 testy
+linka 3 testy
 linia 4
-linia 5
+liniaa 5
 linia 6
 linia 7
 linia 8
 linia 9
-linia 10
+MR kappa 10
 linia 11
 linia 12
-linia 13
-linia 14
-linia 15
-linia 16
-linia 17
-linia 18
-linia 19
-linia 20
-linia 21
-linia 22
-linia 23

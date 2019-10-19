@@ -5,14 +5,21 @@
 #define NUMBER_OF_DIRS 20
 
 char directives[NUMBER_OF_DIRS][2] = {
-    "A ", "AR",
-    "S ", "SR",
-    "M ", "MR",
-    "D ", "DR",
-    "C ", "CR",
-    "J ", "JZ", "JP", "JN",
-    "L ", "LA", "LR", "ST",
+    "A\0", "AR",
+    "S\0", "SR",
+    "M\0", "MR",
+    "D\0", "DR",
+    "C\0", "CR",
+    "J\0", "JZ", "JP", "JN",
+    "L\0", "LA", "LR", "ST",
     "DC", "DS"};
+typedef struct Label Label;
+
+struct Label
+{
+    int lineIndex;
+    char name[16];
+};
 
 bool stringsToBeSame(char *firstWord, char *secondWord)
 {
@@ -42,48 +49,82 @@ void splitLineIntoWords(char *codeLine, char (*words)[16])
 {
     int j = 0;
     int k = 0;
-    for (int i = 0; i < strlen(codeLine); ++i)
+    // printf("%s\n", codeLine);
+    for (int i = 0; i < strlen(codeLine); i++)
     {
         if (codeLine[i] != ' ' && codeLine[i] != ',')
             words[j][k++] = codeLine[i];
         else if (i && codeLine[i - 1] != ' ' && codeLine[i - 1] != ',')
         {
+            while (k < 16)
+                // filling missing letters in words
+                words[j][k++] = '\0';
             j++;
             k = 0;
         }
+        else
+        {
+            k = 0;
+        }
     }
+    // filling missing words
+    while (j < 16)
+    {
+        for (int i = 0; i < 16; i++)
+            words[j][i] = '\0';
+        j++;
+    };
 }
 
-void extractLabel(char (*words)[16])
+void saveLabel(int lineNumber, char *labelName, Label *labels, int **labelLength)
 {
-    int x = 5;
-};
-void saveLabel(){
-
+    labels[**labelLength].lineIndex = lineNumber + 1;
+    strcpy(labels[**labelLength].name, labelName);
+    **labelLength = **labelLength + 1;
 };
 
 void removeLabelFromWords(){
 
 };
 
-void executeLine(char *codeLine)
+void showLabels(Label *labels, int *labelLength)
 {
-    printf("executing line...\n");
+    printf("Labels:\n");
+    for (int i = 0; i < *labelLength; i++)
+        printf("Name: %s, line: %d\n", labels[i].name, labels[i].lineIndex);
+}
+
+void initializeLine(int lineNumber, char *codeLine, Label *labels, int *labelLength)
+{
+    // printf("initializing line %d\n", lineNumber);
     char words[16][16];
     splitLineIntoWords(codeLine, words);
     // check is there a label
     if (!isDirective(words[0]))
     {
-        saveLabel();
-        removeLabelFromWords();
+        saveLabel(lineNumber, words[0], labels, &labelLength);
+        removeLabelFromWords(words);
     }
+    for (int i = 0; i < 16; i++)
+        printf("%s ", words[i]);
+    printf("\n");
     // continue executing
+}
+
+void initializeProgram(char (*codeLines)[256], int codeLength, Label *labels, int *labelLength)
+{
+    printf("Initializing...\n");
+    for (int i = 0; i < codeLength; i++)
+        initializeLine(i, codeLines[i], labels, labelLength);
+    printf("Program initialized succesfully\n");
 }
 
 int main()
 {
     FILE *file;
-    char codeStrings[256][256];
+    char codeLines[256][256];
+    Label labels[128];
+    int labelLength = 0;
     file = fopen("sample.txt", "r");
     if (file != NULL)
     {
@@ -93,13 +134,24 @@ int main()
     {
         printf("Cannot find parseable file\n");
     };
-    int i = 0;
+    int codeLength = 0;
+    char codeLineHandler[64];
     while (!feof(file))
     {
-        fgets(codeStrings[i], 64, file);
-        i++;
+        fgets(codeLineHandler, 64, file);
+        if (strlen(codeLineHandler) != 1)
+        {
+            strcpy(codeLines[codeLength], codeLineHandler);
+            codeLength++;
+        }
+        else
+        {
+            printf("WARNING: There is empty line in given file. It will cause line numeration change");
+        }
     };
-    executeLine(codeStrings[0]);
+    showLabels(labels, &labelLength);
+    initializeProgram(codeLines, codeLength, labels, &labelLength);
+    showLabels(labels, &labelLength);
     fclose(file);
 
     return 0;
