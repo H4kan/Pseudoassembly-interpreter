@@ -2,10 +2,10 @@ DC,slowo, slowo1, linia2 slowo3,slowo4
 DC linia 2
 linka 3 testy
 linia 4
-liniaa 5
+liniaa 3 5
 M linia 6
 STlinia 7
-linia 8
+linia 12 8
 linia 9
 MR kappa 10
 linia 11

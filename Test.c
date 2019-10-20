@@ -88,8 +88,12 @@ void saveLabel(int lineNumber, char *labelName, Label *labels, int **labelLength
     **labelLength = **labelLength + 1;
 };
 
-void removeLabelFromWords(){
-
+void removeLabelFromWords(char (*words)[16])
+{
+    for (int i = 1; i < 16; i++)
+        strcpy(words[i - 1], words[i]);
+    for (int i = 0; i < 16; i++)
+        words[15][i] = '\0';
 };
 
 void showLabels(Label *labels, int *labelLength)
@@ -99,11 +103,12 @@ void showLabels(Label *labels, int *labelLength)
         printf("Name: %s, line: %d\n", labels[i].name, labels[i].lineIndex);
 }
 
-void initializeLine(int lineNumber, char *codeLine, Label *labels, int *labelLength)
+void initializeLine(int lineNumber, char *codeLine, char (*words)[16], Label *labels, int *labelLength)
 {
     // printf("initializing line %d\n", lineNumber);
-    char words[16][16];
+    // char words[16][16];
     splitLineIntoWords(codeLine, words);
+
     // check is there a label
     if (!(isDirective(words[0])))
     {
@@ -111,27 +116,217 @@ void initializeLine(int lineNumber, char *codeLine, Label *labels, int *labelLen
         saveLabel(lineNumber, words[0], labels, &labelLength);
         removeLabelFromWords(words);
     }
+
     for (int i = 0; i < 16; i++)
         printf("%s ", words[i]);
     printf("\n");
-    // continue executing
 }
 
-void initializeProgram(char (*codeLines)[256], int codeLength, Label *labels, int *labelLength)
+void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLength, Label *labels, int *labelLength)
 {
     printf("Initializing...\n");
+
     for (int i = 0; i < codeLength; i++)
-        initializeLine(i, codeLines[i], labels, labelLength);
+        initializeLine(i, codeLines[i], words[i], labels, labelLength);
+
     printf("Program initialized succesfully\n");
+}
+// TODO: Put directives in struct
+void A_directive()
+{
+    printf("ex A dir");
+}
+
+void AR_directive()
+{
+    printf("ex AR dir");
+}
+
+void S_directive()
+{
+    printf("ex S dir");
+}
+
+void SR_directive()
+{
+    printf("ex SR dir");
+}
+
+void M_directive()
+{
+    printf("ex M dir");
+}
+
+void MR_directive()
+{
+    printf("ex MR dir");
+}
+
+void D_directive()
+{
+    printf("ex D dir");
+}
+
+void DR_directive()
+{
+    printf("ex DR dir");
+}
+
+void C_directive()
+{
+    printf("ex C dir");
+}
+
+void CR_directive()
+{
+    printf("ex CR dir");
+}
+
+void J_directive()
+{
+    printf("ex J dir");
+}
+
+void JZ_directive()
+{
+    printf("ex JZ dir");
+}
+
+void JP_directive()
+{
+    printf("ex JP dir");
+}
+
+void JN_directive()
+{
+    printf("ex JN dir");
+}
+
+void L_directive()
+{
+    printf("ex L dir");
+}
+
+void LA_directive()
+{
+    printf("ex LA dir");
+}
+
+void LR_directive()
+{
+    printf("ex LR dir");
+}
+
+void ST_directive()
+{
+    printf("ex ST dir");
+}
+
+void DC_directive()
+{
+    printf("ex DC dir");
+}
+
+void DS_directive()
+{
+    printf("ex DS dir");
+}
+
+void executeLine(int lineNumber, char (*words)[16])
+{
+    printf("Executing line %d with first word %s\n", lineNumber, words[0]);
+    printf("%s %s", directives[18], words[0]);
+    if (stringsToBeSame(words[0], directives[0]))
+    {
+        A_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[1]))
+    {
+        AR_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[2]))
+    {
+        S_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[3]))
+    {
+        SR_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[4]))
+    {
+        M_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[5]))
+    {
+        MR_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[6]))
+    {
+        D_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[7]))
+    {
+        DR_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[8]))
+    {
+        C_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[9]))
+    {
+        CR_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[10]))
+    {
+        J_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[11]))
+    {
+        JZ_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[12]))
+    {
+        JP_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[13]))
+    {
+        JN_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[14]))
+    {
+        L_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[15]))
+    {
+        LA_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[16]))
+    {
+        LR_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[17]))
+    {
+        ST_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[18]))
+    {
+        DC_directive();
+    }
+    else if (stringsToBeSame(words[0], directives[19]))
+    {
+        DS_directive();
+    }
 }
 
 int main()
 {
     FILE *file;
     char codeLines[256][256];
+    char words[256][16][16];
     Label labels[128];
     int labelLength = 0;
     file = fopen("sample.txt", "r");
+
     if (file != NULL)
     {
         printf("File loaded\n");
@@ -140,8 +335,10 @@ int main()
     {
         printf("Cannot find parseable file\n");
     };
+
     int codeLength = 0;
     char codeLineHandler[64];
+
     while (!feof(file))
     {
         fgets(codeLineHandler, 64, file);
@@ -155,10 +352,11 @@ int main()
             printf("WARNING: There is empty line in given file. It will cause line numeration change");
         }
     };
-    showLabels(labels, &labelLength);
-    initializeProgram(codeLines, codeLength, labels, &labelLength);
-    showLabels(labels, &labelLength);
+
     fclose(file);
+    initializeProgram(codeLines, words, codeLength, labels, &labelLength);
+
+    executeLine(1, words[0]);
 
     return 0;
 }
