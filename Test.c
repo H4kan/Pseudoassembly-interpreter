@@ -4,15 +4,20 @@
 // FILE *infile;
 #define NUMBER_OF_DIRS 20
 
-char directives[NUMBER_OF_DIRS][2] = {
-    "A\0", "AR",
-    "S\0", "SR",
-    "M\0", "MR",
-    "D\0", "DR",
-    "C\0", "CR",
-    "J\0", "JZ", "JP", "JN",
-    "L\0", "LA", "LR", "ST",
-    "DC", "DS"};
+char directives[NUMBER_OF_DIRS][3] = {
+    "A\0", "AR\0",
+    "S\0", "SR\0",
+    "M\0", "MR\0",
+    "D\0", "DR\0",
+    "C\0", "CR\0",
+    "J\0", "JZ\0", "JP\0", "JN\0",
+    "L\0", "LA\0", "LR\0", "ST\0",
+    "DC\0", "DS\0"};
+
+// void initializeDirectives() {
+//     strcpy(directives[19], "DS");
+//     strcpy(directives[18], "Dc");
+// }
 typedef struct Label Label;
 
 struct Label
@@ -36,9 +41,7 @@ bool isDirective(char *word)
     for (int i = 0; i < NUMBER_OF_DIRS; i++)
     {
         char directiveHandler[2];
-        directiveHandler[0] = directives[i][0];
-        directiveHandler[1] = directives[i][1];
-        directiveHandler[2] = '\0';
+        strcpy(directiveHandler, directives[i]);
         if (stringsToBeSame(directiveHandler, word))
             return true;
     }
@@ -49,7 +52,6 @@ void splitLineIntoWords(char *codeLine, char (*words)[16])
 {
     int j = 0;
     int k = 0;
-    // printf("%s\n", codeLine);
     for (int i = 0; i < strlen(codeLine); i++)
     {
         if (codeLine[i] != ' ' && codeLine[i] != ',')
@@ -116,10 +118,6 @@ void initializeLine(int lineNumber, char *codeLine, char (*words)[16], Label *la
         saveLabel(lineNumber, words[0], labels, &labelLength);
         removeLabelFromWords(words);
     }
-
-    for (int i = 0; i < 16; i++)
-        printf("%s ", words[i]);
-    printf("\n");
 }
 
 void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLength, Label *labels, int *labelLength)
@@ -131,10 +129,29 @@ void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLe
 
     printf("Program initialized succesfully\n");
 }
-// TODO: Put directives in struct
-void A_directive()
+int parseToDecimal(char *word)
 {
-    printf("ex A dir");
+    int result = 0;
+    int decPower = 1;
+    for (int i = strlen(word) - 1; i >= 0; i--)
+    {
+        if ((int)word[i] == 10)
+            continue;
+        if ((int)word[i] < 48 || (int)word[i] > 57)
+        {
+            printf("ERROR: Tried parsing inparseable value\n");
+            return -1;
+        }
+        result += ((int)word[i] - 48) * decPower;
+        decPower *= 10;
+    }
+    return result;
+}
+// TODO: Put directives in struct
+void A_directive(int *registers, char (*words)[16])
+{
+    printf("executing A dir\n");
+    registers[parseToDecimal(words[1])] += parseToDecimal(words[2]);
 }
 
 void AR_directive()
@@ -232,13 +249,12 @@ void DS_directive()
     printf("ex DS dir");
 }
 
-void executeLine(int lineNumber, char (*words)[16])
+void executeLine(int lineNumber, char (*words)[16], int *registers)
 {
-    printf("Executing line %d with first word %s\n", lineNumber, words[0]);
-    printf("%s %s", directives[18], words[0]);
+    printf("Executing line %d with directive %s\n", lineNumber, words[0]);
     if (stringsToBeSame(words[0], directives[0]))
     {
-        A_directive();
+        A_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[1]))
     {
@@ -318,6 +334,13 @@ void executeLine(int lineNumber, char (*words)[16])
     }
 }
 
+void showRegisters(int *registers)
+{
+    printf("Registers:\n");
+    for (int i = 0; i < 15; i++)
+        printf("Register #%d:   %d\n", i, registers[i]);
+}
+
 int main()
 {
     FILE *file;
@@ -325,6 +348,7 @@ int main()
     char words[256][16][16];
     Label labels[128];
     int labelLength = 0;
+    int registers[15];
     file = fopen("sample.txt", "r");
 
     if (file != NULL)
@@ -355,8 +379,8 @@ int main()
 
     fclose(file);
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
-
-    executeLine(1, words[0]);
-
+    // showRegisters(registers);
+    executeLine(1, words[0], registers);
+    // showRegisters(registers);
     return 0;
 }

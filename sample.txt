@@ -1,4 +1,4 @@
-DC,slowo, slowo1, linia2 slowo3,slowo4
+A 3, 13
 DC linia 2
 linka 3 testy
 linia 4
