@@ -37,8 +37,8 @@ bool isDirective(char *word)
     {
         char directiveHandler[2];
         directiveHandler[0] = directives[i][0];
-        if (directives[i][1] != ' ')
-            directiveHandler[1] = directives[i][1];
+        directiveHandler[1] = directives[i][1];
+        directiveHandler[2] = '\0';
         if (stringsToBeSame(directiveHandler, word))
             return true;
     }
@@ -67,6 +67,11 @@ void splitLineIntoWords(char *codeLine, char (*words)[16])
             k = 0;
         }
     }
+    while (k < 16)
+    {
+        words[j][k++] = '\0';
+    }
+    j++;
     // filling missing words
     while (j < 16)
     {
@@ -100,8 +105,9 @@ void initializeLine(int lineNumber, char *codeLine, Label *labels, int *labelLen
     char words[16][16];
     splitLineIntoWords(codeLine, words);
     // check is there a label
-    if (!isDirective(words[0]))
+    if (!(isDirective(words[0])))
     {
+        // printf("words[0] is %d  ", strlen(words[0]));
         saveLabel(lineNumber, words[0], labels, &labelLength);
         removeLabelFromWords(words);
     }

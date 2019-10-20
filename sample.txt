@@ -3,8 +3,8 @@ DC linia 2
 linka 3 testy
 linia 4
 liniaa 5
-linia 6
-linia 7
+M linia 6
+STlinia 7
 linia 8
 linia 9
 MR kappa 10
