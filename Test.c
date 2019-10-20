@@ -133,19 +133,25 @@ int parseToDecimal(char *word)
 {
     int result = 0;
     int decPower = 1;
+    int sign = 1;
     for (int i = strlen(word) - 1; i >= 0; i--)
     {
+        if (word[i] == '-')
+        {
+            sign *= -1;
+            continue;
+        }
         if ((int)word[i] == 10)
             continue;
         if ((int)word[i] < 48 || (int)word[i] > 57)
         {
             printf("ERROR: Tried parsing inparseable value\n");
-            return -1;
+            return 0;
         }
         result += ((int)word[i] - 48) * decPower;
         decPower *= 10;
     }
-    return result;
+    return sign * result;
 }
 // TODO: Put directives in struct
 void A_directive(int *registers, char (*words)[16])
@@ -154,39 +160,52 @@ void A_directive(int *registers, char (*words)[16])
     registers[parseToDecimal(words[1])] += parseToDecimal(words[2]);
 }
 
-void AR_directive()
+void AR_directive(int *registers, char (*words)[16])
 {
-    printf("ex AR dir");
+    printf("executing AR dir\n");
+    registers[parseToDecimal(words[1])] += registers[parseToDecimal(words[2])];
 }
 
-void S_directive()
+void S_directive(int *registers, char (*words)[16])
 {
-    printf("ex S dir");
+    printf("executing S dir\n");
+    registers[parseToDecimal(words[1])] -= parseToDecimal(words[2]);
 }
 
-void SR_directive()
+void SR_directive(int *registers, char (*words)[16])
 {
-    printf("ex SR dir");
+    printf("executing SR dir\n");
+    registers[parseToDecimal(words[1])] -= registers[parseToDecimal(words[2])];
 }
 
-void M_directive()
+void M_directive(int *registers, char (*words)[16])
 {
-    printf("ex M dir");
+    printf("executing M dir\n");
+    registers[parseToDecimal(words[1])] *= parseToDecimal(words[2]);
 }
 
-void MR_directive()
+void MR_directive(int *registers, char (*words)[16])
 {
-    printf("ex MR dir");
+    printf("executing MR dir\n");
+    registers[parseToDecimal(words[1])] *= registers[parseToDecimal(words[2])];
 }
 
-void D_directive()
+void D_directive(int *registers, char (*words)[16])
 {
-    printf("ex D dir");
+    printf("executing D dir\n");
+    if (!parseToDecimal(words[2]))
+        registers[parseToDecimal(words[1])] /= parseToDecimal(words[2]);
+    else
+        printf("ERROR: Dividing by zero");
 }
 
-void DR_directive()
+void DR_directive(int *registers, char (*words)[16])
 {
-    printf("ex DR dir");
+    printf("executing DR dir\n");
+    if (!registers[parseToDecimal(words[2])])
+        registers[parseToDecimal(words[1])] /= registers[parseToDecimal(words[2])];
+    else
+        printf("ERROR: Dividing by zero");
 }
 
 void C_directive()
@@ -258,31 +277,31 @@ void executeLine(int lineNumber, char (*words)[16], int *registers)
     }
     else if (stringsToBeSame(words[0], directives[1]))
     {
-        AR_directive();
+        AR_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[2]))
     {
-        S_directive();
+        S_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[3]))
     {
-        SR_directive();
+        SR_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[4]))
     {
-        M_directive();
+        M_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[5]))
     {
-        MR_directive();
+        MR_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[6]))
     {
-        D_directive();
+        D_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[7]))
     {
-        DR_directive();
+        DR_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[8]))
     {
@@ -337,7 +356,7 @@ void executeLine(int lineNumber, char (*words)[16], int *registers)
 void showRegisters(int *registers)
 {
     printf("Registers:\n");
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 16; i++)
         printf("Register #%d:   %d\n", i, registers[i]);
 }
 
@@ -348,7 +367,7 @@ int main()
     char words[256][16][16];
     Label labels[128];
     int labelLength = 0;
-    int registers[15];
+    int registers[16];
     file = fopen("sample.txt", "r");
 
     if (file != NULL)
@@ -379,8 +398,9 @@ int main()
 
     fclose(file);
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
-    // showRegisters(registers);
+    registers[13] = 2;
+    showRegisters(registers);
     executeLine(1, words[0], registers);
-    // showRegisters(registers);
+    showRegisters(registers);
     return 0;
 }
