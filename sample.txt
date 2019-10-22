@@ -1,5 +1,4 @@
-AR 3, 13
-DC linia 2
+mumia DC linia 2
 linka 3 testy
 linia 4
 liniaa 3 5

@@ -26,6 +26,12 @@ struct Label
     char name[16];
 };
 
+struct Number
+{
+    int value;
+    char name[16]
+};
+
 bool stringsToBeSame(char *firstWord, char *secondWord)
 {
     if (strlen(firstWord) != strlen(secondWord))
@@ -153,6 +159,15 @@ int parseToDecimal(char *word)
     }
     return sign * result;
 }
+
+int findLabelIndex(Label *labels, int lineIndex, int labelLength)
+{
+    for (int i = 0; i < labelLength; i++)
+        if (labels[i].lineIndex == lineIndex)
+            return i;
+    printf("Can't find given label");
+    return -1;
+}
 // TODO: Put directives in struct
 void A_directive(int *registers, char (*words)[16])
 {
@@ -258,9 +273,11 @@ void ST_directive()
     printf("ex ST dir");
 }
 
-void DC_directive()
+void DC_directive(char (*words)[16], int lineIndex, Label *labels, int labelLength)
 {
-    printf("ex DC dir");
+    printf("executing DC dir\n");
+    char labelName[16];
+    strcpy(labelName, labels[findLabelIndex(labels, lineIndex, labelLength)].name);
 }
 
 void DS_directive()
@@ -268,9 +285,9 @@ void DS_directive()
     printf("ex DS dir");
 }
 
-void executeLine(int lineNumber, char (*words)[16], int *registers)
+void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength)
 {
-    printf("Executing line %d with directive %s\n", lineNumber, words[0]);
+    printf("Executing line %d with directive %s\n", lineIndex, words[0]);
     if (stringsToBeSame(words[0], directives[0]))
     {
         A_directive(registers, words);
@@ -345,7 +362,7 @@ void executeLine(int lineNumber, char (*words)[16], int *registers)
     }
     else if (stringsToBeSame(words[0], directives[18]))
     {
-        DC_directive();
+        DC_directive(words, lineIndex, labels, labelLength);
     }
     else if (stringsToBeSame(words[0], directives[19]))
     {
@@ -400,7 +417,7 @@ int main()
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
     registers[13] = 2;
     showRegisters(registers);
-    executeLine(1, words[0], registers);
+    executeLine(1, words[0], registers, labels, labelLength);
     showRegisters(registers);
     return 0;
 }
