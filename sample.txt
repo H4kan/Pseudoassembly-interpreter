@@ -1,7 +1,7 @@
-mumia DC linia 2
-linka 3 testy
-linia 4
-liniaa 3 5
+mumia DC 10*INTEGER(15)
+linka DC INTEGER(2)
+linia DC 5*INTEGER(3)
+labela DC INTEGER(4)
 M linia 6
 STlinia 7
 linia 12 8

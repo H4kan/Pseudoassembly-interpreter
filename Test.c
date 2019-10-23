@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include<stdlib.h>
 // FILE *infile;
 #define NUMBER_OF_DIRS 20
+#define MAX_CODELINE_LENGTH 256
+#define MAX_CODE_LENGTH 256
 
 char directives[NUMBER_OF_DIRS][3] = {
     "A\0", "AR\0",
@@ -19,6 +22,7 @@ char directives[NUMBER_OF_DIRS][3] = {
 //     strcpy(directives[18], "Dc");
 // }
 typedef struct Label Label;
+typedef struct Number Number;
 
 struct Label
 {
@@ -29,7 +33,7 @@ struct Label
 struct Number
 {
     int value;
-    char name[16]
+    char name[16];
 };
 
 bool stringsToBeSame(char *firstWord, char *secondWord)
@@ -152,7 +156,7 @@ int parseToDecimal(char *word)
         if ((int)word[i] < 48 || (int)word[i] > 57)
         {
             printf("ERROR: Tried parsing inparseable value\n");
-            return 0;
+            return NULL;
         }
         result += ((int)word[i] - 48) * decPower;
         decPower *= 10;
@@ -167,6 +171,23 @@ int findLabelIndex(Label *labels, int lineIndex, int labelLength)
             return i;
     printf("Can't find given label");
     return -1;
+}
+
+bool isArrayInitialization(char *word) {
+    for (int i = 0; i < strlen(word); i++) {
+        if (word[i] == '*') return true;
+    }
+    return false;
+}
+
+int extractValueFromIntegerString(char *word) {
+    char extractedValue[16];
+    int j = 0;
+    int i = 1;
+    while(word[i-1] != '(') i++;
+    while(word[i] != ')') extractedValue[j++] = word[i++];
+    while(j<16) extractedValue[j++] = '\0'; 
+    return parseToDecimal(extractedValue);
 }
 // TODO: Put directives in struct
 void A_directive(int *registers, char (*words)[16])
@@ -268,16 +289,44 @@ void LR_directive()
     printf("ex LR dir");
 }
 
-void ST_directive()
+void ST_directive() 
 {
     printf("ex ST dir");
 }
 
-void DC_directive(char (*words)[16], int lineIndex, Label *labels, int labelLength)
+void DC_directive(char (*words)[16], int lineIndex, Label *labels, int labelLength, Number *memory, int *numberOfVars)
 {
     printf("executing DC dir\n");
-    char labelName[16];
-    strcpy(labelName, labels[findLabelIndex(labels, lineIndex, labelLength)].name);
+    char newNumberName[16];
+    strcpy(newNumberName, labels[findLabelIndex(labels, lineIndex, labelLength)].name);
+    if (isArrayInitialization(words[1])) {
+        char arraySizeString[16];
+        char wordWithoutSize[16];
+        int arraySize;
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        while (words[1][i] != '*') {arraySizeString[j++] = words[1][i++]; }
+        while (j < 16) {arraySizeString[j++] = '\0';}
+        arraySize = parseToDecimal(arraySizeString);
+        while (i < 16) { wordWithoutSize[k++] = words[1][++i];}
+        while (k < 16) wordWithoutSize[k++] = '\0';
+        int newNumberValue = extractValueFromIntegerString(wordWithoutSize);
+        *numberOfVars = *numberOfVars + arraySize;
+        memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
+        Number newNumber = { .value = newNumberValue };
+        for (int i = 0; i< arraySize; i++) {
+            memory[*numberOfVars - arraySize + i] = newNumber;
+        }
+        strcpy(memory[*numberOfVars - arraySize].name, newNumberName);   
+    } else {
+    int newNumberValue = extractValueFromIntegerString(words[1]);
+    *numberOfVars = *numberOfVars + 1;
+    memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
+    Number newNumber = { .value = newNumberValue };
+    strcpy(newNumber.name, newNumberName);
+    memory[*numberOfVars - 1] = newNumber;
+    }
 }
 
 void DS_directive()
@@ -285,7 +334,7 @@ void DS_directive()
     printf("ex DS dir");
 }
 
-void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength)
+void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars)
 {
     printf("Executing line %d with directive %s\n", lineIndex, words[0]);
     if (stringsToBeSame(words[0], directives[0]))
@@ -362,7 +411,7 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[18]))
     {
-        DC_directive(words, lineIndex, labels, labelLength);
+        DC_directive(words, lineIndex, labels, labelLength, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[19]))
     {
@@ -380,13 +429,14 @@ void showRegisters(int *registers)
 int main()
 {
     FILE *file;
-    char codeLines[256][256];
-    char words[256][16][16];
+    char codeLines[MAX_CODE_LENGTH][MAX_CODELINE_LENGTH];
+    char words[MAX_CODE_LENGTH][16][16];
     Label labels[128];
     int labelLength = 0;
+    int numberOfVars = 0;
     int registers[16];
     file = fopen("sample.txt", "r");
-
+    Number *memory = (Number *)malloc(1);
     if (file != NULL)
     {
         printf("File loaded\n");
@@ -416,8 +466,14 @@ int main()
     fclose(file);
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
     registers[13] = 2;
-    showRegisters(registers);
-    executeLine(1, words[0], registers, labels, labelLength);
-    showRegisters(registers);
+    // showRegisters(registers);
+    executeLine(1, words[0], registers, labels, labelLength, memory, &numberOfVars);
+    executeLine(2, words[1], registers, labels, labelLength, memory, &numberOfVars);
+    executeLine(3, words[2], registers, labels, labelLength, memory, &numberOfVars);
+    executeLine(4, words[3], registers, labels, labelLength, memory, &numberOfVars);
+    for (int i = 0; i< 17; i++)
+        printf("%s  %d\n", memory[i].name, memory[i].value); 
+    // showRegisters(registers);
+    // showLabels(labels, &labelLength);
     return 0;
 }
