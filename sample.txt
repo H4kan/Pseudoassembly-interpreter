@@ -1,11 +1,10 @@
 mumia DC 10*INTEGER(15)
 linka DC INTEGER(2)
 linia DC 5*INTEGER(3)
-labela DC INTEGER(4)
-M linia 6
+A 5, mumia
+D 5, linia
 STlinia 7
 linia 12 8
 linia 9
-MR kappa 10
 linia 11
 linia 12

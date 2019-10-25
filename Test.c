@@ -173,6 +173,16 @@ int findLabelIndex(Label *labels, int lineIndex, int labelLength)
     return -1;
 }
 
+int findMemoryValue(Number *memory, int *numberOfVars, char *name) {
+    // removing last character if it is line feed
+    if ((int)name[strlen(name) - 1] == 10) name[strlen(name) - 1] = '\0';
+    for (int i = 0; i < *numberOfVars; i++) {
+        if (stringsToBeSame(memory[i].name, name)) return memory[i].value;
+    };
+    printf("%s is not defined\n", name);
+    return 0;
+}
+
 bool isArrayInitialization(char *word) {
     for (int i = 0; i < strlen(word); i++) {
         if (word[i] == '*') return true;
@@ -190,10 +200,10 @@ int extractValueFromIntegerString(char *word) {
     return parseToDecimal(extractedValue);
 }
 // TODO: Put directives in struct
-void A_directive(int *registers, char (*words)[16])
+void A_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
 {
     printf("executing A dir\n");
-    registers[parseToDecimal(words[1])] += parseToDecimal(words[2]);
+    registers[parseToDecimal(words[1])] += findMemoryValue(memory, numberOfVars, words[2]);
 }
 
 void AR_directive(int *registers, char (*words)[16])
@@ -202,10 +212,10 @@ void AR_directive(int *registers, char (*words)[16])
     registers[parseToDecimal(words[1])] += registers[parseToDecimal(words[2])];
 }
 
-void S_directive(int *registers, char (*words)[16])
+void S_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
 {
     printf("executing S dir\n");
-    registers[parseToDecimal(words[1])] -= parseToDecimal(words[2]);
+    registers[parseToDecimal(words[1])] -= findMemoryValue(memory, numberOfVars, words[2]);
 }
 
 void SR_directive(int *registers, char (*words)[16])
@@ -214,10 +224,10 @@ void SR_directive(int *registers, char (*words)[16])
     registers[parseToDecimal(words[1])] -= registers[parseToDecimal(words[2])];
 }
 
-void M_directive(int *registers, char (*words)[16])
+void M_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
 {
     printf("executing M dir\n");
-    registers[parseToDecimal(words[1])] *= parseToDecimal(words[2]);
+    registers[parseToDecimal(words[1])] *= findMemoryValue(memory, numberOfVars, words[2]);
 }
 
 void MR_directive(int *registers, char (*words)[16])
@@ -226,11 +236,11 @@ void MR_directive(int *registers, char (*words)[16])
     registers[parseToDecimal(words[1])] *= registers[parseToDecimal(words[2])];
 }
 
-void D_directive(int *registers, char (*words)[16])
+void D_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
 {
     printf("executing D dir\n");
-    if (!parseToDecimal(words[2]))
-        registers[parseToDecimal(words[1])] /= parseToDecimal(words[2]);
+    if (findMemoryValue(memory, numberOfVars, words[2]))
+        registers[parseToDecimal(words[1])] /= findMemoryValue(memory, numberOfVars, words[2]);
     else
         printf("ERROR: Dividing by zero");
 }
@@ -329,9 +339,39 @@ void DC_directive(char (*words)[16], int lineIndex, Label *labels, int labelLeng
     }
 }
 
-void DS_directive()
+void DS_directive(char (*words)[16], int lineIndex, Label *labels, int labelLength, Number *memory, int *numberOfVars)
 {
-    printf("ex DS dir");
+    printf("executing DS dir\n");
+    char newNumberName[16];
+    strcpy(newNumberName, labels[findLabelIndex(labels, lineIndex, labelLength)].name);
+    if (isArrayInitialization(words[1])) {
+        char arraySizeString[16];
+        char wordWithoutSize[16];
+        int arraySize;
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        while (words[1][i] != '*') {arraySizeString[j++] = words[1][i++]; }
+        while (j < 16) {arraySizeString[j++] = '\0';}
+        arraySize = parseToDecimal(arraySizeString);
+        while (i < 16) { wordWithoutSize[k++] = words[1][++i];}
+        while (k < 16) wordWithoutSize[k++] = '\0';
+        int newNumberValue = extractValueFromIntegerString(wordWithoutSize);
+        *numberOfVars = *numberOfVars + arraySize;
+        memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
+        Number newNumber = { .value = newNumberValue };
+        for (int i = 0; i< arraySize; i++) {
+            memory[*numberOfVars - arraySize + i] = newNumber;
+        }
+        strcpy(memory[*numberOfVars - arraySize].name, newNumberName);   
+    } else {
+    int newNumberValue = extractValueFromIntegerString(words[1]);
+    *numberOfVars = *numberOfVars + 1;
+    memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
+    Number newNumber = { .value = newNumberValue };
+    strcpy(newNumber.name, newNumberName);
+    memory[*numberOfVars - 1] = newNumber;
+    }
 }
 
 void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars)
@@ -339,7 +379,7 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     printf("Executing line %d with directive %s\n", lineIndex, words[0]);
     if (stringsToBeSame(words[0], directives[0]))
     {
-        A_directive(registers, words);
+        A_directive(registers, words, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[1]))
     {
@@ -347,7 +387,7 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[2]))
     {
-        S_directive(registers, words);
+        S_directive(registers, words, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[3]))
     {
@@ -355,7 +395,7 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[4]))
     {
-        M_directive(registers, words);
+        M_directive(registers, words, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[5]))
     {
@@ -363,7 +403,7 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[6]))
     {
-        D_directive(registers, words);
+        D_directive(registers, words, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[7]))
     {
@@ -415,7 +455,7 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[19]))
     {
-        DS_directive();
+        DS_directive(words, lineIndex, labels, labelLength, memory, numberOfVars);
     }
 }
 
@@ -466,14 +506,15 @@ int main()
     fclose(file);
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
     registers[13] = 2;
-    // showRegisters(registers);
+    showRegisters(registers);
     executeLine(1, words[0], registers, labels, labelLength, memory, &numberOfVars);
     executeLine(2, words[1], registers, labels, labelLength, memory, &numberOfVars);
     executeLine(3, words[2], registers, labels, labelLength, memory, &numberOfVars);
     executeLine(4, words[3], registers, labels, labelLength, memory, &numberOfVars);
-    for (int i = 0; i< 17; i++)
+    executeLine(5, words[4], registers, labels, labelLength, memory, &numberOfVars);
+    for (int i = 0; i< numberOfVars; i++)
         printf("%s  %d\n", memory[i].name, memory[i].value); 
-    // showRegisters(registers);
+    showRegisters(registers);
     // showLabels(labels, &labelLength);
     return 0;
 }
