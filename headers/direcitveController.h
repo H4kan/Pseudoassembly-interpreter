@@ -6,48 +6,48 @@
 #define directiveController
 
 
-void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars)
+void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister)
 {
     printf("Executing line %d with directive %s\n", lineIndex, words[0]);
     if (stringsToBeSame(words[0], directives[0]))
     {
-        A_directive(registers, words, memory, numberOfVars);
+        A_directive(registers, words, memory, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[1]))
     {
-        AR_directive(registers, words);
+        AR_directive(registers, words, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[2]))
     {
-        S_directive(registers, words, memory, numberOfVars);
+        S_directive(registers, words, memory, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[3]))
     {
-        SR_directive(registers, words);
+        SR_directive(registers, words, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[4]))
     {
-        M_directive(registers, words, memory, numberOfVars);
+        M_directive(registers, words, memory, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[5]))
     {
-        MR_directive(registers, words);
+        MR_directive(registers, words, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[6]))
     {
-        D_directive(registers, words, memory, numberOfVars);
+        D_directive(registers, words, memory, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[7]))
     {
-        DR_directive(registers, words);
+        DR_directive(registers, words, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[8]))
     {
-        C_directive();
+        C_directive(registers, words, memory, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[9]))
     {
-        CR_directive();
+        CR_directive(registers, words, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[10]))
     {

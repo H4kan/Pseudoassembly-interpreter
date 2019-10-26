@@ -12,7 +12,7 @@
 typedef struct Label Label;
 typedef struct Number Number;
 
-char STATUS[4][2] = { "00", "01", "10", "11" };
+char STATUS[4][3] = { "00\0", "01\0", "10\0", "11\0" };
 // 00 - zero
 // 01 - positive
 // 10 - negative

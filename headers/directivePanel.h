@@ -4,68 +4,94 @@
 #ifndef directivePanel
 #define directivePanel
 
-void A_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
+void A_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars, char *stateRegister)
 {
     printf("executing A dir\n");
-    registers[parseToDecimal(words[1])] += findMemoryValue(memory, numberOfVars, words[2]);
+    int regIndex = parseToDecimal(words[1]);
+    registers[regIndex] += findMemoryValue(memory, numberOfVars, words[2]);
+    switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void AR_directive(int *registers, char (*words)[16])
+void AR_directive(int *registers, char (*words)[16],  char *stateRegister)
 {
     printf("executing AR dir\n");
-    registers[parseToDecimal(words[1])] += registers[parseToDecimal(words[2])];
+    int regIndex = parseToDecimal(words[1]);
+    registers[regIndex] += registers[parseToDecimal(words[2])];
+    switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void S_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
+void S_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars,  char *stateRegister)
 {
     printf("executing S dir\n");
-    registers[parseToDecimal(words[1])] -= findMemoryValue(memory, numberOfVars, words[2]);
+    int regIndex = parseToDecimal(words[1]);
+    registers[regIndex] -= findMemoryValue(memory, numberOfVars, words[2]);
+    switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void SR_directive(int *registers, char (*words)[16])
+void SR_directive(int *registers, char (*words)[16],  char *stateRegister)
 {
     printf("executing SR dir\n");
-    registers[parseToDecimal(words[1])] -= registers[parseToDecimal(words[2])];
+    int regIndex = parseToDecimal(words[1]);
+    registers[regIndex] -= registers[parseToDecimal(words[2])];
+    switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void M_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
+void M_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars,  char *stateRegister)
 {
     printf("executing M dir\n");
-    registers[parseToDecimal(words[1])] *= findMemoryValue(memory, numberOfVars, words[2]);
+    int regIndex = parseToDecimal(words[1]);
+    registers[regIndex] *= findMemoryValue(memory, numberOfVars, words[2]);
+    switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void MR_directive(int *registers, char (*words)[16])
+void MR_directive(int *registers, char (*words)[16],  char *stateRegister)
 {
     printf("executing MR dir\n");
-    registers[parseToDecimal(words[1])] *= registers[parseToDecimal(words[2])];
+    int regIndex = parseToDecimal(words[1]);
+    registers[regIndex] *= registers[parseToDecimal(words[2])];
+    switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void D_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
+void D_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars,  char *stateRegister)
 {
     printf("executing D dir\n");
-    if (findMemoryValue(memory, numberOfVars, words[2]))
-        registers[parseToDecimal(words[1])] /= findMemoryValue(memory, numberOfVars, words[2]);
-    else
+    if (findMemoryValue(memory, numberOfVars, words[2])) {
+        int regIndex = parseToDecimal(words[1]);
+        registers[regIndex] /= findMemoryValue(memory, numberOfVars, words[2]);
+        switchRegisterStatus(stateRegister, registers[regIndex]);
+    }
+    else {
         printf("ERROR: Dividing by zero");
+        strcpy(stateRegister, STATUS[3]);
+    }
 }
 
-void DR_directive(int *registers, char (*words)[16])
+void DR_directive(int *registers, char (*words)[16],  char *stateRegister)
 {
     printf("executing DR dir\n");
-    if (!registers[parseToDecimal(words[2])])
-        registers[parseToDecimal(words[1])] /= registers[parseToDecimal(words[2])];
-    else
+    if (!registers[parseToDecimal(words[2])]) {
+        int regIndex = parseToDecimal(words[1]);
+        registers[regIndex] /= registers[parseToDecimal(words[2])];
+        switchRegisterStatus(stateRegister, registers[regIndex]);
+    }
+    else {
         printf("ERROR: Dividing by zero");
+        strcpy(stateRegister, STATUS[3]);
+    }
 }
 
-void C_directive()
+void C_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars,  char *stateRegister)
 {
-    printf("ex C dir");
+    printf("executing C dir\n");
+    int returnedValue = registers[parseToDecimal(words[1])] - findMemoryValue(memory, numberOfVars, words[2]);
+    switchRegisterStatus(stateRegister, returnedValue);
 }
 
-void CR_directive()
+void CR_directive(int *registers, char (*words)[16],  char *stateRegister)
 {
-    printf("ex CR dir");
+    printf("executing CR dir\n");
+    int returnedValue = registers[parseToDecimal(words[1])] - registers[parseToDecimal(words[2])];
+    switchRegisterStatus(stateRegister, returnedValue);
 }
 
 void J_directive()

@@ -46,9 +46,15 @@ void showRegisters(int *registers)
         printf("Register #%d:   %d\n", i, registers[i]);
 }
 
+void showMemory(Number *memory, int numberOfVars) 
+{
+    printf("Memory variables:\n");
+    for (int i = 0; i < numberOfVars; i++)
+        printf("%s  %d\n", memory[i].name, memory[i].value); 
+}
+
 int main()
 {
-    // printf("status is %s\n", STATUS[0]);
     FILE *file;
     char codeLines[MAX_CODE_LENGTH][MAX_CODELINE_LENGTH];
     char words[MAX_CODE_LENGTH][16][16];
@@ -56,7 +62,8 @@ int main()
     int labelLength = 0;
     int numberOfVars = 0;
     int registers[16];
-    char programStatusRegister[2] = { "00" };
+    char stateRegister[2];
+    strcpy(stateRegister, STATUS[0]);
     file = fopen("src/sample.txt", "r");
     Number *memory = (Number *)malloc(1);
     if (file != NULL)
@@ -90,13 +97,14 @@ int main()
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
     registers[13] = 2;
     showRegisters(registers);
-    executeLine(1, words[0], registers, labels, labelLength, memory, &numberOfVars);
-    executeLine(2, words[1], registers, labels, labelLength, memory, &numberOfVars);
-    executeLine(3, words[2], registers, labels, labelLength, memory, &numberOfVars);
-    executeLine(4, words[3], registers, labels, labelLength, memory, &numberOfVars);
-    executeLine(5, words[4], registers, labels, labelLength, memory, &numberOfVars);
-    for (int i = 0; i< numberOfVars; i++)
-        printf("%s  %d\n", memory[i].name, memory[i].value); 
+    printf("Register status is  %s\n", stateRegister);
+    executeLine(1, words[0], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
+    executeLine(2, words[1], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
+    executeLine(3, words[2], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
+    executeLine(4, words[3], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
+    executeLine(5, words[4], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
+    printf("Register status is  %s\n", stateRegister);
+    showMemory(memory, numberOfVars);
     showRegisters(registers);
     // showLabels(labels, &labelLength);
     return 0;

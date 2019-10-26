@@ -1,8 +1,7 @@
-mumia DC 10*INTEGER(15)
-linka DC INTEGER(2)
-linia DC 5*INTEGER(3)
+mumia DC 10*INTEGER(2)
+linka DC INTEGER(-5)
 A 5, mumia
-D 5, linka
+C  13 mumia
 STlinia 7
 linia 12 8
 linia 9

@@ -136,5 +136,14 @@ void removeLabelFromWords(char (*words)[16])
         words[15][i] = '\0';
 };
 
+void switchRegisterStatus(char *programStatusRegister, int valueReturned)
+{
+    if (valueReturned == 0) strcpy(programStatusRegister, STATUS[0]);
+    else if (valueReturned > 0) strcpy(programStatusRegister, STATUS[1]);
+    else if (valueReturned < 0) strcpy(programStatusRegister, STATUS[2]);
+    else strcpy(programStatusRegister, STATUS[3]);
+    
+    
+}
 
 #endif
