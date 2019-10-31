@@ -53,15 +53,15 @@ void executeLine(char (*words)[16], int *registers, Label *labels, int labelLeng
     }
     else if (stringsToBeSame(words[0], directives[11]))
     {
-        JZ_directive();
+        JZ_directive(words, labels, labelLength, nextLineToExec, isFinished, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[12]))
     {
-        JP_directive();
+        JP_directive(words, labels, labelLength, nextLineToExec, isFinished, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[13]))
     {
-        JN_directive();
+        JN_directive(words, labels, labelLength, nextLineToExec, isFinished, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[14]))
     {

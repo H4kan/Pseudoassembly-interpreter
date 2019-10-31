@@ -112,19 +112,55 @@ void J_directive(char (*words)[16], Label *labels, int labelLength, int *nextLin
     }
 }
 
-void JZ_directive()
+void JZ_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
-    printf("ex JZ dir");
+    printf("executing JZ dir\n");
+    if (stringsToBeSame(stateRegister, STATUS[0]))
+    {
+        if (stringsToBeSame(words[1], ENDING_WORDS))
+        {
+            printf("KONIEC\n");
+            *isFinished = true;
+        }
+        else
+        {
+            *nextLineToExec = labels[findLabelIndexByName(labels, words[1], labelLength)].lineIndex - 1;
+        }
+    }
 }
 
-void JP_directive()
+void JP_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
-    printf("ex JP dir");
+    printf("executing JP dir\n");
+    if (stringsToBeSame(stateRegister, STATUS[1]))
+    {
+        if (stringsToBeSame(words[1], ENDING_WORDS))
+        {
+            printf("KONIEC\n");
+            *isFinished = true;
+        }
+        else
+        {
+            *nextLineToExec = labels[findLabelIndexByName(labels, words[1], labelLength)].lineIndex - 1;
+        }
+    }
 }
 
-void JN_directive()
+void JN_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
-    printf("ex JN dir");
+    printf("executing JN dir\n");
+    if (stringsToBeSame(stateRegister, STATUS[2]))
+    {
+        if (stringsToBeSame(words[1], ENDING_WORDS))
+        {
+            printf("KONIEC\n");
+            *isFinished = true;
+        }
+        else
+        {
+            *nextLineToExec = labels[findLabelIndexByName(labels, words[1], labelLength)].lineIndex - 1;
+        }
+    }
 }
 
 void L_directive()
