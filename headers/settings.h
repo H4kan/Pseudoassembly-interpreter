@@ -8,11 +8,13 @@
 #define NUMBER_OF_DIRS 20
 #define MAX_CODELINE_LENGTH 256
 #define MAX_CODE_LENGTH 256
+#define START_LINE_INDEX 1
+#define ENDING_WORDS "KONIEC"
 
 typedef struct Label Label;
 typedef struct Number Number;
 
-char STATUS[4][3] = { "00\0", "01\0", "10\0", "11\0" };
+char STATUS[4][3] = {"00\0", "01\0", "10\0", "11\0"};
 // 00 - zero
 // 01 - positive
 // 10 - negative
@@ -26,8 +28,7 @@ char directives[NUMBER_OF_DIRS][3] = {
     "C\0", "CR",
     "J\0", "JZ", "JP", "JN",
     "L\0", "LA", "LR", "ST",
-    "DC", "DS"
-    };
+    "DC", "DS"};
 
 struct Label
 {

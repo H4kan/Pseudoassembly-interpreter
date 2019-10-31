@@ -9,14 +9,11 @@
 
 void initializeLine(int lineNumber, char *codeLine, char (*words)[16], Label *labels, int *labelLength)
 {
-    // printf("initializing line %d\n", lineNumber);
-    // char words[16][16];
     splitLineIntoWords(codeLine, words);
 
     // check is there a label
     if (!(isDirective(words[0])))
     {
-        // printf("words[0] is %d  ", strlen(words[0]));
         saveLabel(lineNumber, words[0], labels, &labelLength);
         removeLabelFromWords(words);
     }
@@ -32,10 +29,19 @@ void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLe
     printf("Program initialized succesfully\n");
 }
 
-void executeProgram(char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int codeLength)
+void showMemory(Number *memory, int *numberOfVars)
 {
-    int nextLineToExec = 0;
-    executeLine(1, words[0], registers, labels, labelLength, memory, &numberOfVars, stateRegister, &nextLineToExec);
+    printf("Memory variables:\n");
+    for (int i = 0; i < *numberOfVars; i++)
+        printf("%s  %d\n", memory[i].name, memory[i].value);
+}
+
+void executeProgram(char (*words)[16][16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int codeLength)
+{
+    int nextLineToExec = START_LINE_INDEX;
+    bool isFinished = false;
+    while (!isFinished || nextLineToExec >= codeLength + 1)
+        executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
 }
 
 void showLabels(Label *labels, int *labelLength)
@@ -50,13 +56,6 @@ void showRegisters(int *registers)
     printf("Registers:\n");
     for (int i = 0; i < 16; i++)
         printf("Register #%d:   %d\n", i, registers[i]);
-}
-
-void showMemory(Number *memory, int numberOfVars) 
-{
-    printf("Memory variables:\n");
-    for (int i = 0; i < numberOfVars; i++)
-        printf("%s  %d\n", memory[i].name, memory[i].value); 
 }
 
 int main()
@@ -106,7 +105,7 @@ int main()
     printf("Register status is  %s\n", stateRegister);
     executeProgram(words, registers, labels, labelLength, memory, &numberOfVars, stateRegister, codeLength);
     printf("Register status is  %s\n", stateRegister);
-    showMemory(memory, numberOfVars);
+    showMemory(memory, &numberOfVars);
     showRegisters(registers);
     // showLabels(labels, &labelLength);
     return 0;

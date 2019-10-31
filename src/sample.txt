@@ -1,10 +1,7 @@
 mumia DC 10*INTEGER(2)
-linka DC INTEGER(-5)
-A 5, mumia
+J linka
 C  13 mumia
 J linka
-LR 7, 5
-linia 12 8
-linia 9
-linia 11
-linia 12
+A 3,5
+A 5,3
+linka J KONIEC

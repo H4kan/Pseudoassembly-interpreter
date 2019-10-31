@@ -1,15 +1,12 @@
 #include "util.h"
 #include "directivePanel.h"
 
-
 #ifndef directiveController
 #define directiveController
 
-
-void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int *nextLineToExec)
+void executeLine(char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int *nextLineToExec, bool *isFinished)
 {
-    
-    printf("Executing line %d with directive %s\n", lineIndex, words[0]);
+    printf("Executing line %d with directive %s\n", *nextLineToExec, words[0]);
     if (stringsToBeSame(words[0], directives[0]))
     {
         A_directive(registers, words, memory, numberOfVars, stateRegister);
@@ -52,7 +49,7 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[10]))
     {
-        J_directive(words, labels, labelLength, nextLineToExec);
+        J_directive(words, labels, labelLength, nextLineToExec, isFinished);
     }
     else if (stringsToBeSame(words[0], directives[11]))
     {
@@ -84,11 +81,14 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[18]))
     {
-        DC_directive(words, lineIndex, labels, labelLength, memory, numberOfVars);
+        DC_directive(words, *nextLineToExec, labels, labelLength, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[19]))
     {
-        DS_directive(words, lineIndex, labels, labelLength, memory, numberOfVars);
-    } else printf("Unknown directive");
+        DS_directive(words, *nextLineToExec, labels, labelLength, memory, numberOfVars);
+    }
+    else
+        printf("Unknown directive");
+    *nextLineToExec = *nextLineToExec + 1;
 }
 #endif
