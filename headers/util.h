@@ -5,6 +5,8 @@
 #include "settings.h"
 bool stringsToBeSame(char *firstWord, char *secondWord)
 {
+    if ((int)firstWord[strlen(firstWord) - 1] == 10) firstWord[strlen(firstWord) - 1] = '\0';
+    if ((int)secondWord[strlen(secondWord) - 1] == 10) secondWord[strlen(secondWord) - 1] = '\0';
     if (strlen(firstWord) != strlen(secondWord))
         return false;
     for (int i = 0; i < strlen(firstWord); i++)
@@ -44,12 +46,21 @@ int parseToDecimal(char *word)
     return sign * result;
 }
 
-int findLabelIndex(Label *labels, int lineIndex, int labelLength)
+int findLabelIndexByLine(Label *labels, int lineIndex, int labelLength)
 {
     for (int i = 0; i < labelLength; i++)
         if (labels[i].lineIndex == lineIndex)
             return i;
-    printf("Can't find given label");
+    printf("Can't find given label\n");
+    return -1;
+}
+
+int findLabelIndexByName(Label *labels, char *name, int labelLength)
+{
+    for (int i = 0; i < labelLength; i++) {
+        if (stringsToBeSame(labels[i].name, name)) return i;
+    }
+    printf("Can't find given label\n");
     return -1;
 }
 
@@ -63,6 +74,15 @@ int findMemoryValue(Number *memory, int *numberOfVars, char *name) {
     return 0;
 }
 
+int findMemoryIndex(Number *memory, int *numberOfVars, char *name) {
+    // removing last character if it is line feed
+    if ((int)name[strlen(name) - 1] == 10) name[strlen(name) - 1] = '\0';
+    for (int i = 0; i < *numberOfVars; i++) {
+        if (stringsToBeSame(memory[i].name, name)) return i;
+    };
+    printf("%s is not defined\n", name);
+    return -1;
+}
 
 int extractValueFromIntegerString(char *word) {
     char extractedValue[16];

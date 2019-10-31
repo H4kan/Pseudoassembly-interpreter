@@ -32,6 +32,12 @@ void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLe
     printf("Program initialized succesfully\n");
 }
 
+void executeProgram(char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int codeLength)
+{
+    int nextLineToExec = 0;
+    executeLine(1, words[0], registers, labels, labelLength, memory, &numberOfVars, stateRegister, &nextLineToExec);
+}
+
 void showLabels(Label *labels, int *labelLength)
 {
     printf("Labels:\n");
@@ -98,11 +104,7 @@ int main()
     registers[13] = 2;
     showRegisters(registers);
     printf("Register status is  %s\n", stateRegister);
-    executeLine(1, words[0], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
-    executeLine(2, words[1], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
-    executeLine(3, words[2], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
-    executeLine(4, words[3], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
-    executeLine(5, words[4], registers, labels, labelLength, memory, &numberOfVars, stateRegister);
+    executeProgram(words, registers, labels, labelLength, memory, &numberOfVars, stateRegister, codeLength);
     printf("Register status is  %s\n", stateRegister);
     showMemory(memory, numberOfVars);
     showRegisters(registers);

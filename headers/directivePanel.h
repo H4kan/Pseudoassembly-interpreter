@@ -94,9 +94,10 @@ void CR_directive(int *registers, char (*words)[16],  char *stateRegister)
     switchRegisterStatus(stateRegister, returnedValue);
 }
 
-void J_directive()
+void J_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec)
 {
-    printf("ex J dir");
+    printf("executing J dir\n");
+    nextLineToExec = labels[findLabelIndexByName(labels, words[1], labelLength)].lineIndex;
 }
 
 void JZ_directive()
@@ -124,21 +125,23 @@ void LA_directive()
     printf("ex LA dir");
 }
 
-void LR_directive()
+void LR_directive(int *registers, char (*words)[16])
 {
-    printf("ex LR dir");
+    printf("executing LR dir");
+    registers[parseToDecimal(words[1])] = registers[parseToDecimal(words[2])];
 }
 
-void ST_directive() 
+void ST_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars) 
 {
-    printf("ex ST dir");
+    printf("executing ST dir\n");
+    memory[findMemoryIndex(memory, numberOfVars, words[2])].value = registers[parseToDecimal(words[1])];
 }
 
 void DC_directive(char (*words)[16], int lineIndex, Label *labels, int labelLength, Number *memory, int *numberOfVars)
 {
     printf("executing DC dir\n");
     char newNumberName[16];
-    strcpy(newNumberName, labels[findLabelIndex(labels, lineIndex, labelLength)].name);
+    strcpy(newNumberName, labels[findLabelIndexByLine(labels, lineIndex, labelLength)].name);
     if (isArrayInitialization(words[1])) {
         char arraySizeString[16];
         char wordWithoutSize[16];
@@ -173,7 +176,7 @@ void DS_directive(char (*words)[16], int lineIndex, Label *labels, int labelLeng
 {
     printf("executing DS dir\n");
     char newNumberName[16];
-    strcpy(newNumberName, labels[findLabelIndex(labels, lineIndex, labelLength)].name);
+    strcpy(newNumberName, labels[findLabelIndexByLine(labels, lineIndex, labelLength)].name);
     if (isArrayInitialization(words[1])) {
         char arraySizeString[16];
         char wordWithoutSize[16];

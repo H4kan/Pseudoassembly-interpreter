@@ -6,8 +6,9 @@
 #define directiveController
 
 
-void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister)
+void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int *nextLineToExec)
 {
+    
     printf("Executing line %d with directive %s\n", lineIndex, words[0]);
     if (stringsToBeSame(words[0], directives[0]))
     {
@@ -51,7 +52,7 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[10]))
     {
-        J_directive();
+        J_directive(words, labels, labelLength, nextLineToExec);
     }
     else if (stringsToBeSame(words[0], directives[11]))
     {
@@ -75,11 +76,11 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     }
     else if (stringsToBeSame(words[0], directives[16]))
     {
-        LR_directive();
+        LR_directive(registers, words);
     }
     else if (stringsToBeSame(words[0], directives[17]))
     {
-        ST_directive();
+        ST_directive(registers, words, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[18]))
     {
@@ -88,6 +89,6 @@ void executeLine(int lineIndex, char (*words)[16], int *registers, Label *labels
     else if (stringsToBeSame(words[0], directives[19]))
     {
         DS_directive(words, lineIndex, labels, labelLength, memory, numberOfVars);
-    }
+    } else printf("Unknown directive");
 }
 #endif
