@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "headers/outputFormatter.h"
 #include "headers/settings.h"
 #include "headers/util.h"
 #include "headers/directivePanel.h"
@@ -22,19 +23,19 @@ void initializeLine(int lineNumber, char *codeLine, char (*words)[16], Label *la
 
 void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLength, Label *labels, int *labelLength)
 {
-    printf("Initializing...\n");
+    printInitializationInfo();
 
     for (int i = 0; i < codeLength; i++)
         initializeLine(i, codeLines[i], words[i], labels, labelLength);
 
-    printf("Program initialized succesfully\n");
+    printInitializationSuccess();
 }
 
 void showMemory(Number *memory, int *numberOfVars)
 {
     printf("Memory variables:\n");
     for (int i = 0; i < *numberOfVars; i++)
-        printf("%s  %d\n", memory[i].name, memory[i].value);
+        printf("%s  %08x\n", memory[i].name, memory[i].value);
 }
 
 void executeProgram(char (*words)[16][16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int codeLength)
@@ -56,12 +57,13 @@ void showRegisters(int *registers)
 {
     printf("Registers:\n");
     for (int i = 0; i < 16; i++)
-        printf("Register #%d:   %d\n", i, registers[i]);
+        printf("Register #%d:   %08x\n", i, registers[i]);
 }
 
 int main()
 {
     FILE *file;
+    char fileName[16];
     char codeLines[MAX_CODE_LENGTH][MAX_CODELINE_LENGTH];
     char words[MAX_CODE_LENGTH][16][16];
     Label labels[128];
@@ -69,21 +71,28 @@ int main()
     int numberOfVars = 0;
     int registers[16];
     char stateRegister[2];
+    char sourcePath[16];
+    int codeLength = 0;
+    char codeLineHandler[64];
+
+    // fix MinGW scanf issue
+    setvbuf(stdout, 0, _IONBF, 0);
+    strcpy(sourcePath, SOURCE_DIRECTORY_PATH);
     strcpy(stateRegister, STATUS[0]);
-    file = fopen("src/sample.txt", "r");
+    printFileChoose();
+    scanf("%s", fileName);
+    strcat(sourcePath, fileName);
+    file = fopen(sourcePath, "r");
     Number *memory = (Number *)malloc(1);
     if (file != NULL)
     {
-        printf("File loaded\n");
+        printFileLoadSuccess();
     }
     else
     {
-        printf("Cannot find parseable file\n");
+        printFileLoadError();
         return 0;
     };
-
-    int codeLength = 0;
-    char codeLineHandler[64];
 
     while (!feof(file))
     {
@@ -95,18 +104,15 @@ int main()
         }
         else
         {
-            printf("WARNING: There is empty line in given file. It will cause line numeration change");
+            printEmptyLineWarning();
         }
     };
 
     fclose(file);
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
-    // showRegisters(registers);
-    // printf("Register status is  %s\n", stateRegister);
+    printExecutionChoose();
     executeProgram(words, registers, labels, labelLength, memory, &numberOfVars, stateRegister, codeLength);
-    // printf("Register status is  %s\n", stateRegister);
-    // showMemory(memory, &numberOfVars);
     showRegisters(registers);
-    // showLabels(labels, &labelLength);
+    showMemory(memory, &numberOfVars);
     return 0;
 }

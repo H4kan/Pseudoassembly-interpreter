@@ -75,7 +75,7 @@ int parseSecondWord(char *word, int *registers)
     }
     while (j < 3)
         registerNum[j++] = '\0';
-    // multiplying by 5 because c integer is 5 times bigger than assembler one
+    // multiplying by 5 because number data type is 5 times bigger than assembler integer
     int address = registers[parseToDecimal(registerNum)] + (parseToDecimal(bytesToShift) * 5);
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
@@ -130,11 +130,7 @@ Number *findMemoryAddress(Number *memory, int *numberOfVars, char *name)
     Number *memoryAddress;
     if ((int)name[strlen(name) - 1] == 10)
         name[strlen(name) - 1] = '\0';
-    // if (name[strlen(name) - 1] == ')')
-    // {
-    //     return 12;
-    // }
-    // else
+
     for (int i = 0; i < *numberOfVars; i++)
     {
         if (stringsToBeSame(memory[i].name, name))

@@ -11,6 +11,7 @@
 #define START_LINE_INDEX 1
 #define ENDING_WORDS "KONIEC"
 #define MAX_BYTES_TO_SHIFT_LENGTH 16
+#define SOURCE_DIRECTORY_PATH "src/"
 
 typedef struct Label Label;
 typedef struct Number Number;
