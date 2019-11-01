@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "util.h"
 
 #ifndef directivePanel
@@ -8,7 +9,7 @@ void A_directive(int *registers, char (*words)[16], Number *memory, int *numberO
 {
     printf("executing A dir\n");
     int regIndex = parseToDecimal(words[1]);
-    registers[regIndex] += findMemoryValue(memory, numberOfVars, words[2]);
+    registers[regIndex] += findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
@@ -24,7 +25,7 @@ void S_directive(int *registers, char (*words)[16], Number *memory, int *numberO
 {
     printf("executing S dir\n");
     int regIndex = parseToDecimal(words[1]);
-    registers[regIndex] -= findMemoryValue(memory, numberOfVars, words[2]);
+    registers[regIndex] -= findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
@@ -40,7 +41,7 @@ void M_directive(int *registers, char (*words)[16], Number *memory, int *numberO
 {
     printf("executing M dir\n");
     int regIndex = parseToDecimal(words[1]);
-    registers[regIndex] *= findMemoryValue(memory, numberOfVars, words[2]);
+    registers[regIndex] *= findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
@@ -55,10 +56,10 @@ void MR_directive(int *registers, char (*words)[16], char *stateRegister)
 void D_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars, char *stateRegister)
 {
     printf("executing D dir\n");
-    if (findMemoryValue(memory, numberOfVars, words[2]))
+    if (findMemoryValue(memory, numberOfVars, words[2], registers))
     {
         int regIndex = parseToDecimal(words[1]);
-        registers[regIndex] /= findMemoryValue(memory, numberOfVars, words[2]);
+        registers[regIndex] /= findMemoryValue(memory, numberOfVars, words[2], registers);
         switchRegisterStatus(stateRegister, registers[regIndex]);
     }
     else
@@ -87,7 +88,7 @@ void DR_directive(int *registers, char (*words)[16], char *stateRegister)
 void C_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars, char *stateRegister)
 {
     printf("executing C dir\n");
-    int returnedValue = registers[parseToDecimal(words[1])] - findMemoryValue(memory, numberOfVars, words[2]);
+    int returnedValue = registers[parseToDecimal(words[1])] - findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, returnedValue);
 }
 
@@ -163,19 +164,21 @@ void JN_directive(char (*words)[16], Label *labels, int labelLength, int *nextLi
     }
 }
 
-void L_directive()
+void L_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
 {
-    printf("ex L dir");
+    printf("executing L dir\n");
+    registers[parseToDecimal(words[1])] = findMemoryValue(memory, numberOfVars, words[2], registers);
 }
 
-void LA_directive()
+void LA_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
 {
-    printf("ex LA dir");
+    printf("executing LA dir\n");
+    registers[parseToDecimal(words[1])] = (intptr_t)findMemoryAddress(memory, numberOfVars, words[2]);
 }
 
 void LR_directive(int *registers, char (*words)[16])
 {
-    printf("executing LR dir");
+    printf("executing LR dir\n");
     registers[parseToDecimal(words[1])] = registers[parseToDecimal(words[2])];
 }
 

@@ -65,11 +65,11 @@ void executeLine(char (*words)[16], int *registers, Label *labels, int labelLeng
     }
     else if (stringsToBeSame(words[0], directives[14]))
     {
-        L_directive();
+        L_directive(registers, words, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[15]))
     {
-        LA_directive();
+        LA_directive(registers, words, memory, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[16]))
     {

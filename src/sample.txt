@@ -1,7 +1,8 @@
-mumia DC 10*INTEGER(2)
-S 5, mumia
-JP KONIEC
-JZ linka
-JN linka
-A 5,3
+mumia DC 10*INTEGER(-10)
+dwa DC INTEGER(2)
+L 6, dwa
+LA 5, mumia
+L 3, 40(5)
+A 3, 40(5)
+S 3, 8(5)
 linka J KONIEC

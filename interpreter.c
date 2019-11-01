@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "headers/settings.h"
 #include "headers/util.h"
 #include "headers/directivePanel.h"
@@ -100,12 +101,11 @@ int main()
 
     fclose(file);
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
-    registers[13] = 2;
-    showRegisters(registers);
-    printf("Register status is  %s\n", stateRegister);
+    // showRegisters(registers);
+    // printf("Register status is  %s\n", stateRegister);
     executeProgram(words, registers, labels, labelLength, memory, &numberOfVars, stateRegister, codeLength);
-    printf("Register status is  %s\n", stateRegister);
-    showMemory(memory, &numberOfVars);
+    // printf("Register status is  %s\n", stateRegister);
+    // showMemory(memory, &numberOfVars);
     showRegisters(registers);
     // showLabels(labels, &labelLength);
     return 0;
