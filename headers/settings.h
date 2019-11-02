@@ -6,23 +6,37 @@
 #define settings
 
 #define NUMBER_OF_DIRS 20
+#define DIR_CHAR_LENGTH 3
+#define REG_CHAR_LENGTH 3
+#define LINEFEED_ASCII 10
 #define MAX_CODELINE_LENGTH 256
+#define STAR_CHAR '*'
+#define MINUS_CHAR '-'
+#define LOWER_ASCII_BOUND 48
+#define UPPER_ASCII_BOUND 57
 #define MAX_CODE_LENGTH 256
 #define START_LINE_INDEX 1
 #define ENDING_WORDS "KONIEC"
 #define MAX_BYTES_TO_SHIFT_LENGTH 16
 #define SOURCE_DIRECTORY_PATH "src/"
+#define COMMON_WORD_LENGTH 16
+#define ZERO_STATUS "00"
+#define POSITIVE_STATUS "01"
+#define NEGATIVE_STATUS "10"
+#define ERROR_STATUS "11"
+#define OPEN_BRACKET_CHAR '('
+#define CLOSE_BRACKET_CHAR ')'
+#define NOTHING_CHAR '\0'
+#define INTEGER_SIZE 4
+#define NUMBER_DATA_SIZE 20
+#define SPACE_CHAR ' '
+#define COMMA_CHAR ','
+#define MAX_WORD_LINE_LENGTH 16
 
 typedef struct Label Label;
 typedef struct Number Number;
 
-char STATUS[4][3] = {"00\0", "01\0", "10\0", "11\0"};
-// 00 - zero
-// 01 - positive
-// 10 - negative
-// 11 - error
-
-char directives[NUMBER_OF_DIRS][3] = {
+char directives[NUMBER_OF_DIRS][DIR_CHAR_LENGTH] = {
     "A\0", "AR",
     "S\0", "SR",
     "M\0", "MR",
@@ -35,12 +49,12 @@ char directives[NUMBER_OF_DIRS][3] = {
 struct Label
 {
     int lineIndex;
-    char name[16];
+    char name[COMMON_WORD_LENGTH];
 };
 
 struct Number
 {
     int value;
-    char name[16];
+    char name[COMMON_WORD_LENGTH];
 };
 #endif

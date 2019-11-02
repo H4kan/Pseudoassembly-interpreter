@@ -58,7 +58,7 @@ void D_directive(int *registers, char (*words)[16], Number *memory, int *numberO
     else
     {
         printf(RED "ERROR: Dividing by zero\n" RESET);
-        strcpy(stateRegister, STATUS[3]);
+        strcpy(stateRegister, ERROR_STATUS);
     }
 }
 
@@ -73,7 +73,7 @@ void DR_directive(int *registers, char (*words)[16], char *stateRegister)
     else
     {
         printf(RED "ERROR: Dividing by zero\n" RESET);
-        strcpy(stateRegister, STATUS[3]);
+        strcpy(stateRegister, ERROR_STATUS);
     }
 }
 
@@ -104,7 +104,7 @@ void J_directive(char (*words)[16], Label *labels, int labelLength, int *nextLin
 
 void JZ_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
-    if (stringsToBeSame(stateRegister, STATUS[0]))
+    if (stringsToBeSame(stateRegister, ZERO_STATUS))
     {
         if (stringsToBeSame(words[1], ENDING_WORDS))
         {
@@ -120,7 +120,7 @@ void JZ_directive(char (*words)[16], Label *labels, int labelLength, int *nextLi
 
 void JP_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
-    if (stringsToBeSame(stateRegister, STATUS[1]))
+    if (stringsToBeSame(stateRegister, POSITIVE_STATUS))
     {
         if (stringsToBeSame(words[1], ENDING_WORDS))
         {
@@ -136,7 +136,7 @@ void JP_directive(char (*words)[16], Label *labels, int labelLength, int *nextLi
 
 void JN_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
-    if (stringsToBeSame(stateRegister, STATUS[2]))
+    if (stringsToBeSame(stateRegister, NEGATIVE_STATUS))
     {
         if (stringsToBeSame(words[1], ENDING_WORDS))
         {

@@ -1,16 +1,22 @@
 #include <stdio.h>
 #include <string.h>
+
+#include "settings.h"
+
 #ifndef util
 #define util
-#include "settings.h"
+
 bool stringsToBeSame(char *firstWord, char *secondWord)
 {
-    if ((int)firstWord[strlen(firstWord) - 1] == 10)
-        firstWord[strlen(firstWord) - 1] = '\0';
-    if ((int)secondWord[strlen(secondWord) - 1] == 10)
-        secondWord[strlen(secondWord) - 1] = '\0';
+    // fixing possible line feed
+    if ((int)firstWord[strlen(firstWord) - 1] == LINEFEED_ASCII)
+        firstWord[strlen(firstWord) - 1] = NOTHING_CHAR;
+    if ((int)secondWord[strlen(secondWord) - 1] == LINEFEED_ASCII)
+        secondWord[strlen(secondWord) - 1] = NOTHING_CHAR;
+
     if (strlen(firstWord) != strlen(secondWord))
         return false;
+
     for (int i = 0; i < strlen(firstWord); i++)
         if (firstWord[i] != secondWord[i])
             return false;
@@ -21,11 +27,14 @@ bool isArrayInitialization(char *word)
 {
     for (int i = 0; i < strlen(word); i++)
     {
-        if (word[i] == '*')
+        if (word[i] == STAR_CHAR)
             return true;
     }
     return false;
 }
+
+#include "outputFormatter.h"
+
 int parseToDecimal(char *word)
 {
     int result = 0;
@@ -33,19 +42,19 @@ int parseToDecimal(char *word)
     int sign = 1;
     for (int i = strlen(word) - 1; i >= 0; i--)
     {
-        if (word[i] == '-')
+        if (word[i] == MINUS_CHAR)
         {
             sign *= -1;
             continue;
         }
-        if ((int)word[i] == 10)
+        if ((int)word[i] == LINEFEED_ASCII)
             continue;
-        if ((int)word[i] < 48 || (int)word[i] > 57)
+        if ((int)word[i] < LOWER_ASCII_BOUND || (int)word[i] > UPPER_ASCII_BOUND)
         {
-            printf("ERROR: Tried parsing inparseable value\n");
+            printf(RED "ERROR: Tried parsing inparseable value\n\n" RESET);
             return NULL;
         }
-        result += ((int)word[i] - 48) * decPower;
+        result += ((int)word[i] - LOWER_ASCII_BOUND) * decPower;
         decPower *= 10;
     }
     return sign * result;
@@ -54,29 +63,31 @@ int parseToDecimal(char *word)
 int parseSecondWord(char *word, int *registers)
 {
     char bytesToShift[MAX_BYTES_TO_SHIFT_LENGTH];
-    char registerNum[3];
+    char registerNum[REG_CHAR_LENGTH];
     int i = 0;
     int j = 0;
-    while (word[i] != '(')
+    while (word[i] != OPEN_BRACKET_CHAR)
     {
         bytesToShift[i] = word[i];
         i++;
     }
     i++;
-    while (word[i + j] != ')')
+    while (word[i + j] != CLOSE_BRACKET_CHAR)
     {
         registerNum[j] = word[i + j];
         j++;
     }
-    while (i <= 16)
+    while (i <= MAX_BYTES_TO_SHIFT_LENGTH)
     {
-        bytesToShift[i - 1] = '\0';
+        bytesToShift[i - 1] = NOTHING_CHAR;
         i++;
     }
-    while (j < 3)
-        registerNum[j++] = '\0';
-    // multiplying by 5 because number data type is 5 times bigger than assembler integer
-    int address = registers[parseToDecimal(registerNum)] + (parseToDecimal(bytesToShift) * 5);
+    while (j < REG_CHAR_LENGTH)
+        registerNum[j++] = NOTHING_CHAR;
+
+    // multiplying because number data type is bigger than integer
+    int address = registers[parseToDecimal(registerNum)] + (parseToDecimal(bytesToShift) * NUMBER_DATA_SIZE / INTEGER_SIZE);
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
     intptr_t *result = address;
@@ -89,7 +100,7 @@ int findLabelIndexByLine(Label *labels, int lineIndex, int labelLength)
     for (int i = 0; i < labelLength; i++)
         if (labels[i].lineIndex == lineIndex)
             return i;
-    printf("Can't find given label\n");
+    printf(RED "Can't find given label\n" RESET);
     return -1;
 }
 
@@ -100,17 +111,17 @@ int findLabelIndexByName(Label *labels, char *name, int labelLength)
         if (stringsToBeSame(labels[i].name, name))
             return i;
     }
-    printf("Can't find given label\n");
+    printf(RED "Can't find given label\n" RESET);
     return -1;
 }
 
 int findMemoryValue(Number *memory, int *numberOfVars, char *word, int *registers)
 {
     // removing last character if it is line feed
-    if ((int)word[strlen(word) - 1] == 10)
-        word[strlen(word) - 1] = '\0';
+    if ((int)word[strlen(word) - 1] == LINEFEED_ASCII)
+        word[strlen(word) - 1] = NOTHING_CHAR;
 
-    if (word[strlen(word) - 1] == ')')
+    if (word[strlen(word) - 1] == CLOSE_BRACKET_CHAR)
     {
         return parseSecondWord(word, registers);
     }
@@ -120,7 +131,7 @@ int findMemoryValue(Number *memory, int *numberOfVars, char *word, int *register
             if (stringsToBeSame(memory[i].name, word))
                 return memory[i].value;
         };
-    printf("%s is not defined\n", word);
+    printf(RED "%s is not defined\n" RESET, word);
     return 0;
 }
 
@@ -128,8 +139,8 @@ Number *findMemoryAddress(Number *memory, int *numberOfVars, char *name)
 {
     // removing last character if it is line feed
     Number *memoryAddress;
-    if ((int)name[strlen(name) - 1] == 10)
-        name[strlen(name) - 1] = '\0';
+    if ((int)name[strlen(name) - 1] == LINEFEED_ASCII)
+        name[strlen(name) - 1] = NOTHING_CHAR;
 
     for (int i = 0; i < *numberOfVars; i++)
     {
@@ -137,35 +148,35 @@ Number *findMemoryAddress(Number *memory, int *numberOfVars, char *name)
             memoryAddress = &memory[i];
         return memoryAddress;
     };
-    printf("%s is not defined\n", name);
+    printf(RED "%s is not defined\n" RESET, name);
     return 0;
 }
 
 int findMemoryIndex(Number *memory, int *numberOfVars, char *name)
 {
     // removing last character if it is line feed
-    if ((int)name[strlen(name) - 1] == 10)
-        name[strlen(name) - 1] = '\0';
+    if ((int)name[strlen(name) - 1] == LINEFEED_ASCII)
+        name[strlen(name) - 1] = NOTHING_CHAR;
     for (int i = 0; i < *numberOfVars; i++)
     {
         if (stringsToBeSame(memory[i].name, name))
             return i;
     };
-    printf("%s is not defined\n", name);
+    printf(RED "%s is not defined\n" RESET, name);
     return -1;
 }
 
 int extractValueFromIntegerString(char *word)
 {
-    char extractedValue[16];
+    char extractedValue[COMMON_WORD_LENGTH];
     int j = 0;
     int i = 1;
-    while (word[i - 1] != '(')
+    while (word[i - 1] != OPEN_BRACKET_CHAR)
         i++;
-    while (word[i] != ')')
+    while (word[i] != CLOSE_BRACKET_CHAR)
         extractedValue[j++] = word[i++];
-    while (j < 16)
-        extractedValue[j++] = '\0';
+    while (j < COMMON_WORD_LENGTH)
+        extractedValue[j++] = NOTHING_CHAR;
     return parseToDecimal(extractedValue);
 }
 
@@ -173,7 +184,7 @@ bool isDirective(char *word)
 {
     for (int i = 0; i < NUMBER_OF_DIRS; i++)
     {
-        char directiveHandler[2];
+        char directiveHandler[DIR_CHAR_LENGTH - 1];
         strcpy(directiveHandler, directives[i]);
         if (stringsToBeSame(directiveHandler, word))
             return true;
@@ -181,19 +192,19 @@ bool isDirective(char *word)
     return false;
 };
 
-void splitLineIntoWords(char *codeLine, char (*words)[16])
+void splitLineIntoWords(char *codeLine, char (*words)[COMMON_WORD_LENGTH])
 {
     int j = 0;
     int k = 0;
     for (int i = 0; i < strlen(codeLine); i++)
     {
-        if (codeLine[i] != ' ' && codeLine[i] != ',')
+        if (codeLine[i] != SPACE_CHAR && codeLine[i] != COMMA_CHAR)
             words[j][k++] = codeLine[i];
-        else if (i && codeLine[i - 1] != ' ' && codeLine[i - 1] != ',')
+        else if (i && codeLine[i - 1] != SPACE_CHAR && codeLine[i - 1] != COMMA_CHAR)
         {
-            while (k < 16)
+            while (k < COMMON_WORD_LENGTH)
                 // filling missing letters in words
-                words[j][k++] = '\0';
+                words[j][k++] = NOTHING_CHAR;
             j++;
             k = 0;
         }
@@ -202,16 +213,16 @@ void splitLineIntoWords(char *codeLine, char (*words)[16])
             k = 0;
         }
     }
-    while (k < 16)
+    while (k < COMMON_WORD_LENGTH)
     {
         words[j][k++] = '\0';
     }
     j++;
     // filling missing words
-    while (j < 16)
+    while (j < MAX_WORD_LINE_LENGTH)
     {
-        for (int i = 0; i < 16; i++)
-            words[j][i] = '\0';
+        for (int i = 0; i < COMMON_WORD_LENGTH; i++)
+            words[j][i] = NOTHING_CHAR;
         j++;
     };
 }
@@ -225,22 +236,22 @@ void saveLabel(int lineNumber, char *labelName, Label *labels, int **labelLength
 
 void removeLabelFromWords(char (*words)[16])
 {
-    for (int i = 1; i < 16; i++)
+    for (int i = 1; i < MAX_WORD_LINE_LENGTH; i++)
         strcpy(words[i - 1], words[i]);
-    for (int i = 0; i < 16; i++)
-        words[15][i] = '\0';
+    for (int i = 0; i < COMMON_WORD_LENGTH; i++)
+        words[MAX_WORD_LINE_LENGTH - 1][i] = NOTHING_CHAR;
 };
 
 void switchRegisterStatus(char *programStatusRegister, int valueReturned)
 {
     if (valueReturned == 0)
-        strcpy(programStatusRegister, STATUS[0]);
+        strcpy(programStatusRegister, ZERO_STATUS);
     else if (valueReturned > 0)
-        strcpy(programStatusRegister, STATUS[1]);
+        strcpy(programStatusRegister, POSITIVE_STATUS);
     else if (valueReturned < 0)
-        strcpy(programStatusRegister, STATUS[2]);
+        strcpy(programStatusRegister, NEGATIVE_STATUS);
     else
-        strcpy(programStatusRegister, STATUS[3]);
+        strcpy(programStatusRegister, ERROR_STATUS);
 }
 
 #endif

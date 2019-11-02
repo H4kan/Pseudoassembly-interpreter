@@ -75,7 +75,7 @@ int main()
     // fix MinGW scanf issue
     setvbuf(stdout, 0, _IONBF, 0);
     strcpy(sourcePath, SOURCE_DIRECTORY_PATH);
-    strcpy(stateRegister, STATUS[0]);
+    strcpy(stateRegister, ZERO_STATUS);
     printFileChoose();
     fgets(fileName, 16, stdin);
     fileName[strlen(fileName) - 1] = '\0';
