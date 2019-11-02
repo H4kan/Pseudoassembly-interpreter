@@ -6,7 +6,8 @@
 
 void executeLine(char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int *nextLineToExec, bool *isFinished)
 {
-    printf("Executing line %d with directive %s\n", *nextLineToExec, words[0]);
+    printLineExecution(*nextLineToExec, words[0]);
+
     if (stringsToBeSame(words[0], directives[0]))
     {
         A_directive(registers, words, memory, numberOfVars, stateRegister);

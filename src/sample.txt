@@ -1,5 +1,6 @@
 mumia DC 10*INTEGER(-10)
 dwa DC INTEGER(2)
+JP KONIEC
 L 6, dwa
-L 3, dwa
-linka J KONIEC
+A 6, dwa
+J dwa

@@ -3,9 +3,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "headers/outputFormatter.h"
+
 #include "headers/settings.h"
 #include "headers/util.h"
+#include "headers/outputFormatter.h"
 #include "headers/directivePanel.h"
 #include "headers/direcitveController.h"
 
@@ -31,33 +32,28 @@ void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLe
     printInitializationSuccess();
 }
 
-void showMemory(Number *memory, int *numberOfVars)
-{
-    printf("Memory variables:\n");
-    for (int i = 0; i < *numberOfVars; i++)
-        printf("%s  %08x\n", memory[i].name, memory[i].value);
-}
-
-void executeProgram(char (*words)[16][16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int codeLength)
+void executeProgram(char (*words)[16][16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int codeLength, char *executionMode)
 {
     int nextLineToExec = START_LINE_INDEX;
     bool isFinished = false;
-    while (!isFinished || nextLineToExec >= codeLength + 1)
-        executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
-}
-
-void showLabels(Label *labels, int *labelLength)
-{
-    printf("Labels:\n");
-    for (int i = 0; i < *labelLength; i++)
-        printf("Name: %s, line: %d\n", labels[i].name, labels[i].lineIndex);
-}
-
-void showRegisters(int *registers)
-{
-    printf("Registers:\n");
-    for (int i = 0; i < 16; i++)
-        printf("Register #%d:   %08x\n", i, registers[i]);
+    bool trackRegisters = false;
+    bool trackStatus = false;
+    bool trackMemory = false;
+    while (!isFinished && nextLineToExec <= codeLength)
+    {
+        if (stringsToBeSame(executionMode, DEBUG_MODE))
+        {
+            commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
+        }
+        if (!isFinished)
+            executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
+        if (stringsToBeSame(executionMode, DEBUG_MODE))
+        {
+            printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers);
+        }
+    }
+    showStatus(stateRegister);
+    showRegisters(registers);
 }
 
 int main()
@@ -74,13 +70,20 @@ int main()
     char sourcePath[16];
     int codeLength = 0;
     char codeLineHandler[64];
+    char executionMode[16];
 
     // fix MinGW scanf issue
     setvbuf(stdout, 0, _IONBF, 0);
     strcpy(sourcePath, SOURCE_DIRECTORY_PATH);
     strcpy(stateRegister, STATUS[0]);
     printFileChoose();
-    scanf("%s", fileName);
+    fgets(fileName, 16, stdin);
+    fileName[strlen(fileName) - 1] = '\0';
+    if (!strlen(fileName))
+    {
+        printDefaultFileChoose();
+        strcpy(fileName, DEFAULT_SOURCE_FILENAME);
+    }
     strcat(sourcePath, fileName);
     file = fopen(sourcePath, "r");
     Number *memory = (Number *)malloc(1);
@@ -110,9 +113,18 @@ int main()
 
     fclose(file);
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
+
     printExecutionChoose();
-    executeProgram(words, registers, labels, labelLength, memory, &numberOfVars, stateRegister, codeLength);
-    showRegisters(registers);
-    showMemory(memory, &numberOfVars);
+    fgets(executionMode, 16, stdin);
+    if (stringsToBeSame(executionMode, DEBUG_MODE))
+        printDebugModeOn();
+    else if (stringsToBeSame(executionMode, DEFAULT_MODE))
+        printDebugModeOff();
+    else
+    {
+        printInvalidArgument();
+        printDebugModeOff();
+    }
+    executeProgram(words, registers, labels, labelLength, memory, &numberOfVars, stateRegister, codeLength, executionMode);
     return 0;
 }
