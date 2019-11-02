@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 #ifndef outputFormatter
 #define outputFormatter
 
@@ -45,7 +46,7 @@ void showStatus(char *status)
 void showRegisters(int *registers)
 {
     printf(BLU "Registers\n" RESET);
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < NUMBER_OF_REGS; i++)
         printf(YEL "Register #%02d:  " RESET "%08x\n", i, registers[i]);
     printf("\n");
 }
@@ -118,6 +119,31 @@ void printDebugModeOff()
     printf(YEL "Default mode is on\n\n" RESET);
 }
 
+void printDividingZeroError()
+{
+    printf(RED "ERROR: Dividing by zero\n" RESET);
+}
+
+void printEndingWords()
+{
+    printf(BLU "%s\n\n" RESET, ENDING_WORDS);
+}
+
+void printImparseableValueError()
+{
+    printf(RED "ERROR: Tried parsing inparseable value\n\n" RESET);
+}
+
+void printMissingLabel()
+{
+    printf(RED "Can't find given label\n" RESET);
+}
+
+void printUndWord(char *word)
+{
+    printf(RED "%s is not defined\n" RESET, word);
+}
+
 void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char *stateRegister, Number *memory, int *numberOfVars, Label *labels, int labelLength, int *registers)
 {
     if (trackStatus)
@@ -130,9 +156,9 @@ void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char 
 
 void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemory, char *stateRegister, Number *memory, int *numberOfVars, Label *labels, int labelLength, int *registers, char *executionMode, bool *isFinished)
 {
-    char commandHandler[32];
-    fgets(commandHandler, 32, stdin);
-    commandHandler[strlen(commandHandler) - 1] = '\0';
+    char commandHandler[LONG_WORD_LENGTH];
+    fgets(commandHandler, LONG_WORD_LENGTH, stdin);
+    commandHandler[strlen(commandHandler) - 1] = NOTHING_CHAR;
     if (!strlen(commandHandler) || stringsToBeSame(commandHandler, NEXT_CMD))
         return;
     else if (stringsToBeSame(commandHandler, TRACK_STATUS_CMD))

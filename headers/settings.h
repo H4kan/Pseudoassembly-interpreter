@@ -32,6 +32,8 @@
 #define SPACE_CHAR ' '
 #define COMMA_CHAR ','
 #define MAX_WORD_LINE_LENGTH 16
+#define LONG_WORD_LENGTH 32
+#define NUMBER_OF_REGS 16
 
 typedef struct Label Label;
 typedef struct Number Number;

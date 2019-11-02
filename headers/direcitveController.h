@@ -4,7 +4,7 @@
 #ifndef directiveController
 #define directiveController
 
-void executeLine(char (*words)[16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int *nextLineToExec, bool *isFinished)
+void executeLine(char (*words)[MAX_WORD_LINE_LENGTH], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int *nextLineToExec, bool *isFinished)
 {
     printLineExecution(*nextLineToExec, words[0]);
 
@@ -89,7 +89,7 @@ void executeLine(char (*words)[16], int *registers, Label *labels, int labelLeng
         DS_directive(words, *nextLineToExec, labels, labelLength, memory, numberOfVars);
     }
     else
-        printf("Unknown directive");
+        printf(RED "Unknown directive" RESET);
     *nextLineToExec = *nextLineToExec + 1;
 }
 #endif

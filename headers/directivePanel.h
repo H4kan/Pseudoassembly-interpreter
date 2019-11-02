@@ -5,49 +5,49 @@
 #ifndef directivePanel
 #define directivePanel
 
-void A_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars, char *stateRegister)
+void A_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars, char *stateRegister)
 {
     int regIndex = parseToDecimal(words[1]);
     registers[regIndex] += findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void AR_directive(int *registers, char (*words)[16], char *stateRegister)
+void AR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *stateRegister)
 {
     int regIndex = parseToDecimal(words[1]);
     registers[regIndex] += registers[parseToDecimal(words[2])];
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void S_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars, char *stateRegister)
+void S_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars, char *stateRegister)
 {
     int regIndex = parseToDecimal(words[1]);
     registers[regIndex] -= findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void SR_directive(int *registers, char (*words)[16], char *stateRegister)
+void SR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *stateRegister)
 {
     int regIndex = parseToDecimal(words[1]);
     registers[regIndex] -= registers[parseToDecimal(words[2])];
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void M_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars, char *stateRegister)
+void M_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars, char *stateRegister)
 {
     int regIndex = parseToDecimal(words[1]);
     registers[regIndex] *= findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void MR_directive(int *registers, char (*words)[16], char *stateRegister)
+void MR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *stateRegister)
 {
     int regIndex = parseToDecimal(words[1]);
     registers[regIndex] *= registers[parseToDecimal(words[2])];
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void D_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars, char *stateRegister)
+void D_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars, char *stateRegister)
 {
     if (findMemoryValue(memory, numberOfVars, words[2], registers))
     {
@@ -57,12 +57,12 @@ void D_directive(int *registers, char (*words)[16], Number *memory, int *numberO
     }
     else
     {
-        printf(RED "ERROR: Dividing by zero\n" RESET);
+        printDividingZeroError();
         strcpy(stateRegister, ERROR_STATUS);
     }
 }
 
-void DR_directive(int *registers, char (*words)[16], char *stateRegister)
+void DR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *stateRegister)
 {
     if (!registers[parseToDecimal(words[2])])
     {
@@ -72,28 +72,28 @@ void DR_directive(int *registers, char (*words)[16], char *stateRegister)
     }
     else
     {
-        printf(RED "ERROR: Dividing by zero\n" RESET);
+        printDividingZeroError();
         strcpy(stateRegister, ERROR_STATUS);
     }
 }
 
-void C_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars, char *stateRegister)
+void C_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars, char *stateRegister)
 {
     int returnedValue = registers[parseToDecimal(words[1])] - findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, returnedValue);
 }
 
-void CR_directive(int *registers, char (*words)[16], char *stateRegister)
+void CR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *stateRegister)
 {
     int returnedValue = registers[parseToDecimal(words[1])] - registers[parseToDecimal(words[2])];
     switchRegisterStatus(stateRegister, returnedValue);
 }
 
-void J_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished)
+void J_directive(char (*words)[MAX_WORD_LINE_LENGTH], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished)
 {
     if (stringsToBeSame(words[1], ENDING_WORDS))
     {
-        printf(BLU "%s\n\n" RESET, ENDING_WORDS);
+        printEndingWords();
         *isFinished = true;
     }
     else
@@ -102,13 +102,13 @@ void J_directive(char (*words)[16], Label *labels, int labelLength, int *nextLin
     }
 }
 
-void JZ_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
+void JZ_directive(char (*words)[MAX_WORD_LINE_LENGTH], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
     if (stringsToBeSame(stateRegister, ZERO_STATUS))
     {
         if (stringsToBeSame(words[1], ENDING_WORDS))
         {
-            printf(BLU "%s\n\n" RESET, ENDING_WORDS);
+            printEndingWords();
             *isFinished = true;
         }
         else
@@ -118,29 +118,30 @@ void JZ_directive(char (*words)[16], Label *labels, int labelLength, int *nextLi
     }
 }
 
-void JP_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
+void JP_directive(char (*words)[MAX_WORD_LINE_LENGTH], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
     if (stringsToBeSame(stateRegister, POSITIVE_STATUS))
     {
         if (stringsToBeSame(words[1], ENDING_WORDS))
         {
-            printf(BLU "%s\n\n" RESET, ENDING_WORDS);
+            printEndingWords();
             *isFinished = true;
         }
         else
         {
+            // substracting one because it is added at the end of executeLine func
             *nextLineToExec = labels[findLabelIndexByName(labels, words[1], labelLength)].lineIndex - 1;
         }
     }
 }
 
-void JN_directive(char (*words)[16], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
+void JN_directive(char (*words)[MAX_WORD_LINE_LENGTH], Label *labels, int labelLength, int *nextLineToExec, bool *isFinished, char *stateRegister)
 {
     if (stringsToBeSame(stateRegister, NEGATIVE_STATUS))
     {
         if (stringsToBeSame(words[1], ENDING_WORDS))
         {
-            printf(BLU "%s\n\n" RESET, ENDING_WORDS);
+            printEndingWords();
             *isFinished = true;
         }
         else
@@ -150,53 +151,53 @@ void JN_directive(char (*words)[16], Label *labels, int labelLength, int *nextLi
     }
 }
 
-void L_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
+void L_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars)
 {
     registers[parseToDecimal(words[1])] = findMemoryValue(memory, numberOfVars, words[2], registers);
 }
 
-void LA_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
+void LA_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars)
 {
     registers[parseToDecimal(words[1])] = (intptr_t)findMemoryAddress(memory, numberOfVars, words[2]);
 }
 
-void LR_directive(int *registers, char (*words)[16])
+void LR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH])
 {
     registers[parseToDecimal(words[1])] = registers[parseToDecimal(words[2])];
 }
 
-void ST_directive(int *registers, char (*words)[16], Number *memory, int *numberOfVars)
+void ST_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars)
 {
     memory[findMemoryIndex(memory, numberOfVars, words[2])].value = registers[parseToDecimal(words[1])];
 }
 
-void DC_directive(char (*words)[16], int lineIndex, Label *labels, int labelLength, Number *memory, int *numberOfVars)
+void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, Number *memory, int *numberOfVars)
 {
-    char newNumberName[16];
+    char newNumberName[COMMON_WORD_LENGTH];
     strcpy(newNumberName, labels[findLabelIndexByLine(labels, lineIndex, labelLength)].name);
     if (isArrayInitialization(words[1]))
     {
-        char arraySizeString[16];
-        char wordWithoutSize[16];
+        char arraySizeString[COMMON_WORD_LENGTH];
+        char wordWithoutSize[COMMON_WORD_LENGTH];
         int arraySize;
         int i = 0;
         int j = 0;
         int k = 0;
-        while (words[1][i] != '*')
+        while (words[1][i] != STAR_CHAR)
         {
             arraySizeString[j++] = words[1][i++];
         }
-        while (j < 16)
+        while (j < COMMON_WORD_LENGTH)
         {
-            arraySizeString[j++] = '\0';
+            arraySizeString[j++] = NOTHING_CHAR;
         }
         arraySize = parseToDecimal(arraySizeString);
-        while (i < 16)
+        while (i < COMMON_WORD_LENGTH)
         {
             wordWithoutSize[k++] = words[1][++i];
         }
-        while (k < 16)
-            wordWithoutSize[k++] = '\0';
+        while (k < COMMON_WORD_LENGTH)
+            wordWithoutSize[k++] = NOTHING_CHAR;
         int newNumberValue = extractValueFromIntegerString(wordWithoutSize);
         *numberOfVars = *numberOfVars + arraySize;
         memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
@@ -218,33 +219,33 @@ void DC_directive(char (*words)[16], int lineIndex, Label *labels, int labelLeng
     }
 }
 
-void DS_directive(char (*words)[16], int lineIndex, Label *labels, int labelLength, Number *memory, int *numberOfVars)
+void DS_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, Number *memory, int *numberOfVars)
 {
-    char newNumberName[16];
+    char newNumberName[COMMON_WORD_LENGTH];
     strcpy(newNumberName, labels[findLabelIndexByLine(labels, lineIndex, labelLength)].name);
     if (isArrayInitialization(words[1]))
     {
-        char arraySizeString[16];
-        char wordWithoutSize[16];
+        char arraySizeString[COMMON_WORD_LENGTH];
+        char wordWithoutSize[COMMON_WORD_LENGTH];
         int arraySize;
         int i = 0;
         int j = 0;
         int k = 0;
-        while (words[1][i] != '*')
+        while (words[1][i] != STAR_CHAR)
         {
             arraySizeString[j++] = words[1][i++];
         }
-        while (j < 16)
+        while (j < COMMON_WORD_LENGTH)
         {
-            arraySizeString[j++] = '\0';
+            arraySizeString[j++] = NOTHING_CHAR;
         }
         arraySize = parseToDecimal(arraySizeString);
-        while (i < 16)
+        while (i < COMMON_WORD_LENGTH)
         {
             wordWithoutSize[k++] = words[1][++i];
         }
-        while (k < 16)
-            wordWithoutSize[k++] = '\0';
+        while (k < COMMON_WORD_LENGTH)
+            wordWithoutSize[k++] = NOTHING_CHAR;
         int newNumberValue = extractValueFromIntegerString(wordWithoutSize);
         *numberOfVars = *numberOfVars + arraySize;
         memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));

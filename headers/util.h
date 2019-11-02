@@ -51,7 +51,7 @@ int parseToDecimal(char *word)
             continue;
         if ((int)word[i] < LOWER_ASCII_BOUND || (int)word[i] > UPPER_ASCII_BOUND)
         {
-            printf(RED "ERROR: Tried parsing inparseable value\n\n" RESET);
+            printImparseableValueError();
             return NULL;
         }
         result += ((int)word[i] - LOWER_ASCII_BOUND) * decPower;
@@ -100,7 +100,7 @@ int findLabelIndexByLine(Label *labels, int lineIndex, int labelLength)
     for (int i = 0; i < labelLength; i++)
         if (labels[i].lineIndex == lineIndex)
             return i;
-    printf(RED "Can't find given label\n" RESET);
+    printMissingLabel();
     return -1;
 }
 
@@ -111,7 +111,7 @@ int findLabelIndexByName(Label *labels, char *name, int labelLength)
         if (stringsToBeSame(labels[i].name, name))
             return i;
     }
-    printf(RED "Can't find given label\n" RESET);
+    printMissingLabel();
     return -1;
 }
 
@@ -131,7 +131,7 @@ int findMemoryValue(Number *memory, int *numberOfVars, char *word, int *register
             if (stringsToBeSame(memory[i].name, word))
                 return memory[i].value;
         };
-    printf(RED "%s is not defined\n" RESET, word);
+    printUndWord(word);
     return 0;
 }
 
@@ -162,7 +162,7 @@ int findMemoryIndex(Number *memory, int *numberOfVars, char *name)
         if (stringsToBeSame(memory[i].name, name))
             return i;
     };
-    printf(RED "%s is not defined\n" RESET, name);
+    printUndWord(name);
     return -1;
 }
 
