@@ -10,7 +10,7 @@
 #include "headers/directivePanel.h"
 #include "headers/direcitveController.h"
 
-void initializeLine(int lineNumber, char *codeLine, char (*words)[16], Label *labels, int *labelLength)
+void initializeLine(int lineNumber, char *codeLine, char (*words)[MAX_WORD_LINE_LENGTH], Label *labels, int *labelLength)
 {
     splitLineIntoWords(codeLine, words);
 
@@ -22,7 +22,7 @@ void initializeLine(int lineNumber, char *codeLine, char (*words)[16], Label *la
     }
 }
 
-void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLength, Label *labels, int *labelLength)
+void initializeProgram(char (*codeLines)[MAX_CODELINE_LENGTH], char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH], int codeLength, Label *labels, int *labelLength)
 {
     printInitializationInfo();
 
@@ -32,7 +32,7 @@ void initializeProgram(char (*codeLines)[256], char (*words)[16][16], int codeLe
     printInitializationSuccess();
 }
 
-void executeProgram(char (*words)[16][16], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int codeLength, char *executionMode)
+void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int codeLength, char *executionMode)
 {
     int nextLineToExec = START_LINE_INDEX;
     bool isFinished = false;
@@ -59,25 +59,25 @@ void executeProgram(char (*words)[16][16], int *registers, Label *labels, int la
 int main()
 {
     FILE *file;
-    char fileName[16];
+    char fileName[LONG_WORD_LENGTH];
     char codeLines[MAX_CODE_LENGTH][MAX_CODELINE_LENGTH];
-    char words[MAX_CODE_LENGTH][16][16];
-    Label labels[128];
+    char words[MAX_CODE_LENGTH][MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH];
+    Label labels[MAX_CODE_LENGTH];
     int labelLength = 0;
     int numberOfVars = 0;
-    int registers[16];
-    char stateRegister[2];
-    char sourcePath[16];
+    int registers[NUMBER_OF_REGS];
+    char stateRegister[STATE_REG_LENGTH];
+    char sourcePath[MAX_SOURCE_PATH_LENGTH];
     int codeLength = 0;
-    char codeLineHandler[64];
-    char executionMode[16];
+    char codeLineHandler[MAX_CODELINE_LENGTH];
+    char executionMode[COMMON_WORD_LENGTH];
 
     // fix MinGW scanf issue
     setvbuf(stdout, 0, _IONBF, 0);
     strcpy(sourcePath, SOURCE_DIRECTORY_PATH);
     strcpy(stateRegister, ZERO_STATUS);
     printFileChoose();
-    fgets(fileName, 16, stdin);
+    fgets(fileName, LONG_WORD_LENGTH, stdin);
     fileName[strlen(fileName) - 1] = '\0';
     if (!strlen(fileName))
     {
@@ -99,7 +99,7 @@ int main()
 
     while (!feof(file))
     {
-        fgets(codeLineHandler, 64, file);
+        fgets(codeLineHandler, MAX_CODELINE_LENGTH, file);
         if (strlen(codeLineHandler) != 1)
         {
             strcpy(codeLines[codeLength], codeLineHandler);
@@ -115,7 +115,7 @@ int main()
     initializeProgram(codeLines, words, codeLength, labels, &labelLength);
 
     printExecutionChoose();
-    fgets(executionMode, 16, stdin);
+    fgets(executionMode, COMMON_WORD_LENGTH, stdin);
     if (stringsToBeSame(executionMode, DEBUG_MODE))
         printDebugModeOn();
     else if (stringsToBeSame(executionMode, DEFAULT_MODE))

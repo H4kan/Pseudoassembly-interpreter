@@ -34,6 +34,8 @@
 #define MAX_WORD_LINE_LENGTH 16
 #define LONG_WORD_LENGTH 32
 #define NUMBER_OF_REGS 16
+#define STATE_REG_LENGTH 2
+#define MAX_SOURCE_PATH_LENGTH 128
 
 typedef struct Label Label;
 typedef struct Number Number;

@@ -3,4 +3,17 @@ dwa DC INTEGER(2)
 JP KONIEC
 L 6, dwa
 A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
+A 6, dwa
 J dwa

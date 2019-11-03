@@ -165,76 +165,67 @@ void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemor
     {
         *trackStatus = true;
         printf(YEL "Tracking status is on\n" RESET);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, TRACK_REGISTERS_CMD))
     {
         *trackRegisters = true;
         printf(YEL "Tracking registers is on\n" RESET);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, TRACK_MEMORY_CMD))
     {
         *trackMemory = true;
         printf(YEL "Tracking memory is on\n" RESET);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, UNTRACK_STATUS_CMD))
     {
         *trackStatus = false;
         printf(YEL "Tracking status is off\n" RESET);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, UNTRACK_REGISTERS_CMD))
     {
         *trackRegisters = false;
         printf(YEL "Tracking registers is off\n" RESET);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, UNTRACK_MEMORY_CMD))
     {
         *trackMemory = false;
         printf(YEL "Tracking memory is off\n" RESET);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, SHOW_STATUS_CMD))
     {
         showStatus(stateRegister);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, SHOW_REGISTERS_CMD))
     {
         showRegisters(registers);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, SHOW_MEMORY_CMD))
     {
         showMemory(memory, numberOfVars);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, SHOW_LABELS_CMD))
     {
         showLabels(labels, labelLength);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, SHOW_LABELS_CMD))
     {
         showLabels(labels, labelLength);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
     else if (stringsToBeSame(commandHandler, EXIT_DEBUG_CMD))
     {
         strcpy(executionMode, DEFAULT_MODE);
+        return;
     }
     else if (stringsToBeSame(commandHandler, EXIT_PROGRAM_CMD))
     {
         *isFinished = true;
+        return;
     }
     else
     {
         printf(RED "Unknown command\n" RESET);
-        commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
     }
+    commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
 }
 
 #endif
