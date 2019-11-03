@@ -92,7 +92,7 @@ int main()
 
     FILE *file;
     Label labels[MAX_CODE_LENGTH];
-    Number *memory = (Number *)malloc(1);
+    Number *memory;
 
     char fileName[LONG_WORD_LENGTH];
     char codeLines[MAX_CODE_LENGTH][MAX_CODELINE_LENGTH];
@@ -156,7 +156,7 @@ int main()
 
     printExecutionChoose();
     fgets(executionMode, COMMON_WORD_LENGTH, stdin);
-
+    memory = (Number *)malloc(1);
     if (stringsToBeSame(executionMode, DEBUG_MODE))
         printDebugModeOn();
     else if (stringsToBeSame(executionMode, DEFAULT_MODE))
