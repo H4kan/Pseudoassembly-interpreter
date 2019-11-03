@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #ifndef settings
+
 #define settings
 
 #define NUMBER_OF_DIRS 20
@@ -40,6 +37,7 @@
 typedef struct Label Label;
 typedef struct Number Number;
 
+/* DECLARATION SECTION START */
 char directives[NUMBER_OF_DIRS][DIR_CHAR_LENGTH] = {
     "A\0", "AR",
     "S\0", "SR",
@@ -61,4 +59,5 @@ struct Number
     int value;
     char name[COMMON_WORD_LENGTH];
 };
+/* DECLARATION SECTION END */
 #endif

@@ -1,6 +1,5 @@
-#include <stdio.h>
-
 #ifndef outputFormatter
+
 #define outputFormatter
 
 // colors for console terminal
@@ -31,10 +30,34 @@
 #define EXIT_DEBUG_CMD "skip"
 #define EXIT_PROGRAM_CMD "exit"
 
+bool stringsToBeSame(char *firstWord, char *secondWord)
+{
+    /* DECLARATION SECTION START */
+    int i;
+    /* DECLARATION SECTION END */
+
+    // fixing possible line feed
+    if ((int)firstWord[strlen(firstWord) - 1] == LINEFEED_ASCII)
+        firstWord[strlen(firstWord) - 1] = NOTHING_CHAR;
+    if ((int)secondWord[strlen(secondWord) - 1] == LINEFEED_ASCII)
+        secondWord[strlen(secondWord) - 1] = NOTHING_CHAR;
+
+    if (strlen(firstWord) != strlen(secondWord))
+        return false;
+
+    for (i = 0; i < strlen(firstWord); i++)
+        if (firstWord[i] != secondWord[i])
+            return false;
+    return true;
+}
+
 void showLabels(Label *labels, int labelLength)
 {
+    /* DECLARATION SECTION START */
+    int i;
+    /* DECLARATION SECTION END */
     printf(BLU "Labels\n" RESET);
-    for (int i = 0; i < labelLength; i++)
+    for (i = 0; i < labelLength; i++)
         printf(YEL "Name: %8s, line: %2d\n" RESET, labels[i].name, labels[i].lineIndex);
 }
 
@@ -45,16 +68,22 @@ void showStatus(char *status)
 
 void showRegisters(int *registers)
 {
+    /* DECLARATION SECTION START */
+    int i;
+    /* DECLARATION SECTION END */
     printf(BLU "Registers\n" RESET);
-    for (int i = 0; i < NUMBER_OF_REGS; i++)
+    for (i = 0; i < NUMBER_OF_REGS; i++)
         printf(YEL "Register #%02d:  " RESET "%08x\n", i, registers[i]);
     printf("\n");
 }
 
 void showMemory(Number *memory, int *numberOfVars)
 {
+    /* DECLARATION SECTION START */
+    int i;
+    /* DECLARATION SECTION END */
     printf(BLU "Memory variables\n" RESET);
-    for (int i = 0; i < *numberOfVars; i++)
+    for (i = 0; i < *numberOfVars; i++)
         printf(YEL "%13s  " RESET "%08x\n", memory[i].name, memory[i].value);
     printf("\n");
 }
@@ -156,7 +185,9 @@ void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char 
 
 void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemory, char *stateRegister, Number *memory, int *numberOfVars, Label *labels, int labelLength, int *registers, char *executionMode, bool *isFinished)
 {
+    /* DECLARATION SECTION START */
     char commandHandler[LONG_WORD_LENGTH];
+    /* DECLARATION SECTION END */
     fgets(commandHandler, LONG_WORD_LENGTH, stdin);
     commandHandler[strlen(commandHandler) - 1] = NOTHING_CHAR;
     if (!strlen(commandHandler) || stringsToBeSame(commandHandler, NEXT_CMD))

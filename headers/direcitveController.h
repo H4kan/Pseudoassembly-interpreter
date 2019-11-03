@@ -1,7 +1,5 @@
-#include "util.h"
-#include "directivePanel.h"
-
 #ifndef directiveController
+
 #define directiveController
 
 void executeLine(char (*words)[MAX_WORD_LINE_LENGTH], int *registers, Label *labels, int labelLength, Number *memory, int *numberOfVars, char *stateRegister, int *nextLineToExec, bool *isFinished)
