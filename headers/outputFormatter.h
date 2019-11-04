@@ -2,17 +2,14 @@
 
 #define outputFormatter
 
-// colors for console terminal
+/* COLORS START */
 #define RED "\x1B[31m"
 #define YEL "\x1B[33m"
 #define BLU "\x1B[34m"
 #define RESET "\x1B[0m"
+/* COLORS END */
 
-#define DEFAULT_MODE "default"
-#define DEBUG_MODE "debug"
-#define DEFAULT_SOURCE_FILENAME "sample.txt"
-
-// console commands
+/* COMMANDS START */
 #define TRACK_STATUS_CMD "track status"
 #define TRACK_REGISTERS_CMD "track registers"
 #define TRACK_MEMORY_CMD "track memory"
@@ -29,6 +26,13 @@
 #define NEXT_CMD "next"
 #define EXIT_DEBUG_CMD "skip"
 #define EXIT_PROGRAM_CMD "exit"
+/* COMMANDS END */
+
+/* OTHER START */
+#define DEFAULT_MODE "default"
+#define DEBUG_MODE "debug"
+#define DEFAULT_SOURCE_FILENAME "sample.txt"
+/* OTHER END */
 
 bool stringsToBeSame(char *firstWord, char *secondWord)
 {
@@ -90,7 +94,7 @@ void showMemory(Number *memory, int *numberOfVars)
 
 void printLineExecution(int line, char *directive)
 {
-    printf(YEL "Executing line %d with directive  " RESET BLU "%2s\n" RESET, line, directive);
+    printf(YEL "Executing line %3d with directive  " RESET BLU "%2s\n" RESET, line, directive);
 }
 
 void printFileChoose()
@@ -171,6 +175,19 @@ void printMissingLabel()
 void printUndWord(char *word)
 {
     printf(RED "%s is not defined\n" RESET, word);
+}
+
+void printUnDirective()
+{
+    printf(RED "Unknown directive" RESET);
+}
+
+void printTitle()
+{
+    printf("\n------------------------------\n");
+    printf(BLU "Pseudoassembly Interpreter " RESET YEL "1.0\n" RESET);
+    printf(BLU "Author: " RESET YEL "Szymon Sieradzki\n" RESET);
+    printf("------------------------------\n\n");
 }
 
 void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char *stateRegister, Number *memory, int *numberOfVars, Label *labels, int labelLength, int *registers)

@@ -7,6 +7,7 @@ void A_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *me
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
     /* DECLARATION SECTION END */
+
     registers[regIndex] += findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
@@ -16,6 +17,7 @@ void AR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
     /* DECLARATION SECTION END */
+
     registers[regIndex] += registers[parseToDecimal(words[2])];
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
@@ -25,6 +27,7 @@ void S_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *me
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
     /* DECLARATION SECTION END */
+
     registers[regIndex] -= findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
@@ -34,6 +37,7 @@ void SR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
     /* DECLARATION SECTION END */
+
     registers[regIndex] -= registers[parseToDecimal(words[2])];
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
@@ -43,6 +47,7 @@ void M_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *me
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
     /* DECLARATION SECTION END */
+
     registers[regIndex] *= findMemoryValue(memory, numberOfVars, words[2], registers);
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
@@ -52,6 +57,7 @@ void MR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
     /* DECLARATION SECTION END */
+
     registers[regIndex] *= registers[parseToDecimal(words[2])];
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
@@ -63,6 +69,7 @@ void D_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *me
         /* DECLARATION SECTION START */
         int regIndex = parseToDecimal(words[1]);
         /* DECLARATION SECTION END */
+
         registers[regIndex] /= findMemoryValue(memory, numberOfVars, words[2], registers);
         switchRegisterStatus(stateRegister, registers[regIndex]);
     }
@@ -80,6 +87,7 @@ void DR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
         /* DECLARATION SECTION START */
         int regIndex = parseToDecimal(words[1]);
         /* DECLARATION SECTION END */
+
         registers[regIndex] /= registers[parseToDecimal(words[2])];
         switchRegisterStatus(stateRegister, registers[regIndex]);
     }
@@ -95,6 +103,7 @@ void C_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *me
     /* DECLARATION SECTION START */
     int returnedValue = registers[parseToDecimal(words[1])] - findMemoryValue(memory, numberOfVars, words[2], registers);
     /* DECLARATION SECTION END */
+
     switchRegisterStatus(stateRegister, returnedValue);
 }
 
@@ -103,6 +112,7 @@ void CR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
     /* DECLARATION SECTION START */
     int returnedValue = registers[parseToDecimal(words[1])] - registers[parseToDecimal(words[2])];
     /* DECLARATION SECTION END */
+
     switchRegisterStatus(stateRegister, returnedValue);
 }
 
@@ -146,7 +156,7 @@ void JP_directive(char (*words)[MAX_WORD_LINE_LENGTH], Label *labels, int labelL
         }
         else
         {
-            /* substracting one because it is added at the end of executeLine func */
+            // substracting one because it is added at the end of executeLine func
             *nextLineToExec = labels[findLabelIndexByName(labels, words[1], labelLength)].lineIndex - 1;
         }
     }
@@ -193,6 +203,7 @@ void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
     /* DECLARATION SECTION START */
     char newNumberName[COMMON_WORD_LENGTH];
     /* DECLARATION SECTION END */
+
     strcpy(newNumberName, labels[findLabelIndexByLine(labels, lineIndex, labelLength)].name);
     if (isArrayInitialization(words[1]))
     {
@@ -206,25 +217,31 @@ void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
         int j = 0;
         int k = 0;
         /* DECLARATION SECTION END */
+
         while (words[1][i] != STAR_CHAR)
         {
             arraySizeString[j++] = words[1][i++];
         }
+
         while (j < COMMON_WORD_LENGTH)
         {
             arraySizeString[j++] = NOTHING_CHAR;
         }
         arraySize = parseToDecimal(arraySizeString);
+
         while (i < COMMON_WORD_LENGTH)
         {
             wordWithoutSize[k++] = words[1][++i];
         }
+
         while (k < COMMON_WORD_LENGTH)
             wordWithoutSize[k++] = NOTHING_CHAR;
+
         newNumberValue = extractValueFromIntegerString(wordWithoutSize);
         *numberOfVars = *numberOfVars + arraySize;
         memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
         newNumber.value = newNumberValue;
+
         for (i = 0; i < arraySize; i++)
         {
             memory[*numberOfVars - arraySize + i] = newNumber;
@@ -236,6 +253,7 @@ void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
         /* DECLARATION SECTION START */
         int newNumberValue = extractValueFromIntegerString(words[1]);
         /* DECLARATION SECTION END */
+
         *numberOfVars = *numberOfVars + 1;
         memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
         Number newNumber = {.value = newNumberValue};
@@ -249,6 +267,7 @@ void DS_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
     /* DECLARATION SECTION START */
     char newNumberName[COMMON_WORD_LENGTH];
     /* DECLARATION SECTION END */
+
     strcpy(newNumberName, labels[findLabelIndexByLine(labels, lineIndex, labelLength)].name);
     if (isArrayInitialization(words[1]))
     {
@@ -262,25 +281,31 @@ void DS_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
         int j = 0;
         int k = 0;
         /* DECLARATION SECTION END */
+
         while (words[1][i] != STAR_CHAR)
         {
             arraySizeString[j++] = words[1][i++];
         }
+
         while (j < COMMON_WORD_LENGTH)
         {
             arraySizeString[j++] = NOTHING_CHAR;
         }
         arraySize = parseToDecimal(arraySizeString);
+
         while (i < COMMON_WORD_LENGTH)
         {
             wordWithoutSize[k++] = words[1][++i];
         }
+
         while (k < COMMON_WORD_LENGTH)
             wordWithoutSize[k++] = NOTHING_CHAR;
+
         newNumberValue = extractValueFromIntegerString(wordWithoutSize);
         *numberOfVars = *numberOfVars + arraySize;
         memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
         newNumber.value = newNumberValue;
+
         for (i = 0; i < arraySize; i++)
         {
             memory[*numberOfVars - arraySize + i] = newNumber;
@@ -292,6 +317,7 @@ void DS_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
         /* DECLARATION SECTION START */
         int newNumberValue = extractValueFromIntegerString(words[1]);
         /* DECLARATION SECTION END */
+
         *numberOfVars = *numberOfVars + 1;
         memory = (Number *)realloc(memory, *numberOfVars * sizeof(Number));
         Number newNumber = {.value = newNumberValue};

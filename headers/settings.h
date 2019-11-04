@@ -2,37 +2,57 @@
 
 #define settings
 
-#define NUMBER_OF_DIRS 20
-#define DIR_CHAR_LENGTH 3
-#define REG_CHAR_LENGTH 3
-#define LINEFEED_ASCII 10
-#define MAX_CODELINE_LENGTH 256
-#define STAR_CHAR '*'
-#define MINUS_CHAR '-'
-#define LOWER_ASCII_BOUND 48
-#define UPPER_ASCII_BOUND 57
-#define MAX_CODE_LENGTH 256
-#define START_LINE_INDEX 1
-#define ENDING_WORDS "KONIEC"
-#define MAX_BYTES_TO_SHIFT_LENGTH 16
-#define SOURCE_DIRECTORY_PATH "src/"
-#define COMMON_WORD_LENGTH 16
+/* STATUS START */
 #define ZERO_STATUS "00"
 #define POSITIVE_STATUS "01"
 #define NEGATIVE_STATUS "10"
 #define ERROR_STATUS "11"
+/* STATUS END */
+
+/* MAX CHAR LENGTH START */
+#define MAX_CODELINE_LENGTH 256
+#define MAX_SOURCE_PATH_LENGTH 128
+
+#define COMMON_WORD_LENGTH 16
+#define LONG_WORD_LENGTH 32
+
+#define DIR_CHAR_LENGTH 3
+#define REG_CHAR_LENGTH 3
+#define STATE_REG_LENGTH 2
+/* MAX CHAR LENGTH END */
+
+/* CHAR START */
+#define STAR_CHAR '*'
+#define MINUS_CHAR '-'
 #define OPEN_BRACKET_CHAR '('
 #define CLOSE_BRACKET_CHAR ')'
 #define NOTHING_CHAR '\0'
-#define INTEGER_SIZE 4
-#define NUMBER_DATA_SIZE 20
 #define SPACE_CHAR ' '
 #define COMMA_CHAR ','
+/* CHAR END */
+
+/* QUANTITIES START */
+#define MAX_CODE_LENGTH 256
 #define MAX_WORD_LINE_LENGTH 16
-#define LONG_WORD_LENGTH 32
+#define NUMBER_OF_DIRS 20
 #define NUMBER_OF_REGS 16
-#define STATE_REG_LENGTH 2
-#define MAX_SOURCE_PATH_LENGTH 128
+/* QUANTITIES END */
+
+/* VARIABLE SIZE */
+#define INTEGER_SIZE 4
+#define NUMBER_DATA_SIZE 20
+/* VARIABLE END */
+
+/* OTHER START */
+#define LOWER_ASCII_BOUND 48
+#define UPPER_ASCII_BOUND 57
+
+#define LINEFEED_ASCII 10
+#define START_LINE_INDEX 1
+
+#define ENDING_WORDS "KONIEC"
+#define SOURCE_DIRECTORY_PATH "src/"
+/* OTHER END */
 
 typedef struct Label Label;
 typedef struct Number Number;

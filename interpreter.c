@@ -112,6 +112,8 @@ int main()
     // fix MinGW scanf issue
     setvbuf(stdout, 0, _IONBF, 0);
 
+    printTitle();
+
     strcpy(sourcePath, SOURCE_DIRECTORY_PATH);
     strcpy(stateRegister, ZERO_STATUS);
 
