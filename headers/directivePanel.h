@@ -82,12 +82,11 @@ void D_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *me
 
 void DR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *stateRegister)
 {
-    if (!registers[parseToDecimal(words[2])])
+    if (registers[parseToDecimal(words[2])])
     {
         /* DECLARATION SECTION START */
         int regIndex = parseToDecimal(words[1]);
         /* DECLARATION SECTION END */
-
         registers[regIndex] /= registers[parseToDecimal(words[2])];
         switchRegisterStatus(stateRegister, registers[regIndex]);
     }
