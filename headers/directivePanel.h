@@ -99,10 +99,10 @@ void DR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
 
 void C_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars, char *stateRegister)
 {
+
     /* DECLARATION SECTION START */
     int returnedValue = registers[parseToDecimal(words[1])] - findMemoryValue(memory, numberOfVars, words[2], registers);
     /* DECLARATION SECTION END */
-
     switchRegisterStatus(stateRegister, returnedValue);
 }
 
@@ -184,7 +184,7 @@ void L_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *me
 
 void LA_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars)
 {
-    registers[parseToDecimal(words[1])] = (intptr_t)findMemoryAddress(memory, numberOfVars, words[2]);
+    registers[parseToDecimal(words[1])] = (intptr_t)findMemoryAddress(memory, numberOfVars, words[2], registers);
 }
 
 void LR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH])
@@ -194,7 +194,20 @@ void LR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH])
 
 void ST_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], Number *memory, int *numberOfVars)
 {
+    char secondWord[strlen(words[2])];
+    strcpy(secondWord, words[2]);
+    if ((int)secondWord[strlen(secondWord) - 1] == LINEFEED_ASCII)
+        secondWord[strlen(secondWord) - 1] = NOTHING_CHAR;
+
+    if (secondWord[strlen(secondWord) - 1] == CLOSE_BRACKET_CHAR)
+    {
+        intptr_t *secWordHandler;
+        secWordHandler = parseSecondWord(secondWord, registers);
+        *secWordHandler = registers[parseToDecimal(words[1])];
+        return;
+    }
     memory[findMemoryIndex(memory, numberOfVars, words[2])].value = registers[parseToDecimal(words[1])];
+    // (findMemoryValue(memory, numberOfVars. words[2], registers)).value = registers[parseToDecimal(words[1])];
 }
 
 void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, Number *memory, int *numberOfVars)

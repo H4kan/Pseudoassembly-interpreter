@@ -47,7 +47,7 @@ int parseToDecimal(char *word)
     return sign * result;
 }
 
-int parseSecondWord(char *word, int *registers)
+intptr_t *parseSecondWord(char *word, int *registers)
 {
     /* DECLARATION SECTION START */
     char bytesToShift[COMMON_WORD_LENGTH];
@@ -88,7 +88,7 @@ int parseSecondWord(char *word, int *registers)
 #pragma GCC diagnostic ignored "-Wint-conversion"
     result = address;
 #pragma GCC diagnostic pop
-    return *result;
+    return result;
 }
 
 int findLabelIndexByLine(Label *labels, int lineIndex, int labelLength)
@@ -123,13 +123,15 @@ int findLabelIndexByName(Label *labels, char *name, int labelLength)
 
 int findMemoryValue(Number *memory, int *numberOfVars, char *word, int *registers)
 {
+    intptr_t *secWordHandler;
     // removing last character if it is line feed
     if ((int)word[strlen(word) - 1] == LINEFEED_ASCII)
         word[strlen(word) - 1] = NOTHING_CHAR;
 
     if (word[strlen(word) - 1] == CLOSE_BRACKET_CHAR)
     {
-        return parseSecondWord(word, registers);
+        secWordHandler = parseSecondWord(word, registers);
+        return *secWordHandler;
     }
     else
     {
@@ -148,21 +150,29 @@ int findMemoryValue(Number *memory, int *numberOfVars, char *word, int *register
     return 0;
 }
 
-Number *findMemoryAddress(Number *memory, int *numberOfVars, char *name)
+intptr_t *findMemoryAddress(Number *memory, int *numberOfVars, char *name, int *registers)
 {
     /* DECLARATION SECTION START */
-    Number *memoryAddress;
+    intptr_t *memoryAddress;
     int i;
     /* DECLARATION SECTION END */
 
     // removing last character if it is line feed
     if ((int)name[strlen(name) - 1] == LINEFEED_ASCII)
         name[strlen(name) - 1] = NOTHING_CHAR;
+    if (name[strlen(name) - 1] == CLOSE_BRACKET_CHAR)
+    {
+        memoryAddress = parseSecondWord(name, registers);
+        return memoryAddress;
+    }
 
     for (i = 0; i < *numberOfVars; i++)
     {
         if (stringsToBeSame(memory[i].name, name))
-            memoryAddress = &memory[i];
+        #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-conversion"
+            memoryAddress = (intptr_t)&memory[i];
+            #pragma GCC diagnostic pop
         return memoryAddress;
     };
 

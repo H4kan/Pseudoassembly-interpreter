@@ -31,7 +31,7 @@
 /* OTHER START */
 #define DEFAULT_MODE "default"
 #define DEBUG_MODE "debug"
-#define DEFAULT_SOURCE_FILENAME "sample.txt"
+#define DEFAULT_SOURCE_FILENAME "srednia.txt"
 /* OTHER END */
 
 bool stringsToBeSame(char *firstWord, char *secondWord)
@@ -77,7 +77,7 @@ void showRegisters(int *registers)
     /* DECLARATION SECTION END */
     printf(BLU "Registers\n" RESET);
     for (i = 0; i < NUMBER_OF_REGS; i++)
-        printf(YEL "Register #%02d:  " RESET "%08d\n", i, registers[i]);
+        printf(YEL "Register #%02d:  " RESET "%08x\n", i, registers[i]);
     printf("\n");
 }
 

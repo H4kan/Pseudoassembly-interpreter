@@ -75,11 +75,8 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
 
         if (!isFinished)
             executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
-
-        if (stringsToBeSame(executionMode, DEBUG_MODE))
-        {
             printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers);
-        }
+
     }
 
     showStatus(stateRegister);
@@ -129,15 +126,8 @@ int main()
 
     strcat(sourcePath, fileName);
     file = fopen(sourcePath, "r");
-    if (file != NULL)
-    {
-        printFileLoadSuccess();
-    }
-    else
-    {
-        printFileLoadError();
-        return 0;
-    };
+    if (file != NULL) printFileLoadSuccess();
+                else { printFileLoadError(); return 0; };
 
     while (!feof(file))
     {
@@ -177,5 +167,6 @@ int main()
                    stateRegister,
                    codeLength,
                    executionMode);
+    free(memory);
     return 0;
 }
