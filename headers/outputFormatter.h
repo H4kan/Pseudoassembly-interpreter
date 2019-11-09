@@ -31,7 +31,7 @@
 /* OTHER START */
 #define DEFAULT_MODE "default"
 #define DEBUG_MODE "debug"
-#define DEFAULT_SOURCE_FILENAME "srednia.txt"
+#define DEFAULT_SOURCE_FILENAME "sample.txt"
 /* OTHER END */
 
 bool stringsToBeSame(char *firstWord, char *secondWord)
@@ -81,14 +81,14 @@ void showRegisters(int *registers)
     printf("\n");
 }
 
-void showMemory(Number *memory, int *numberOfVars)
+void showMemory(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
 {
     /* DECLARATION SECTION START */
     int i;
     /* DECLARATION SECTION END */
     printf(BLU "Memory variables\n" RESET);
     for (i = 0; i < *numberOfVars; i++)
-        printf(YEL "%13s  " RESET "%08x\n", memory[i].name, memory[i].value);
+        printf(YEL "%13s  " RESET "%08x\n", memoryLabels[i], memory[i]);
     printf("\n");
 }
 
@@ -179,7 +179,7 @@ void printUndWord(char *word)
 
 void printUnDirective()
 {
-    printf(RED "Unknown directive" RESET);
+    printf(RED "Unknown directive\n" RESET);
 }
 
 void printTitle()
@@ -190,17 +190,17 @@ void printTitle()
     printf("------------------------------\n\n");
 }
 
-void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char *stateRegister, Number *memory, int *numberOfVars, Label *labels, int labelLength, int *registers)
-{
-    if (trackStatus)
-        showStatus(stateRegister);
-    if (trackRegisters)
-        showRegisters(registers);
-    if (trackMemory)
-        showMemory(memory, numberOfVars);
-}
+// void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char *stateRegister, Number *memory, int *numberOfVars, Label *labels, int labelLength, int *registers)
+// {
+//     if (trackStatus)
+//         showStatus(stateRegister);
+//     if (trackRegisters)
+//         showRegisters(registers);
+//     if (trackMemory)
+//         showMemory(memory, memoryLabels, numberOfVars);
+// }
 
-void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemory, char *stateRegister, Number *memory, int *numberOfVars, Label *labels, int labelLength, int *registers, char *executionMode, bool *isFinished)
+void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemory, char *stateRegister, int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, Label *labels, int labelLength, int *registers, char *executionMode, bool *isFinished)
 {
     /* DECLARATION SECTION START */
     char commandHandler[LONG_WORD_LENGTH];
@@ -249,7 +249,7 @@ void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemor
     }
     else if (stringsToBeSame(commandHandler, SHOW_MEMORY_CMD))
     {
-        showMemory(memory, numberOfVars);
+        showMemory(memory, memoryLabels, numberOfVars);
     }
     else if (stringsToBeSame(commandHandler, SHOW_LABELS_CMD))
     {
@@ -273,7 +273,7 @@ void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemor
     {
         printf(RED "Unknown command\n" RESET);
     }
-    commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
+    // commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
 }
 
 #endif

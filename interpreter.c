@@ -52,7 +52,8 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
                     int *registers,
                     Label *labels,
                     int labelLength,
-                    Number *memory,
+                    int *memory,
+                    char *memoryLabels[COMMON_WORD_LENGTH],
                     int *numberOfVars,
                     char *stateRegister,
                     int codeLength,
@@ -68,17 +69,16 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
 
     while (!isFinished && nextLineToExec <= codeLength)
     {
-        if (stringsToBeSame(executionMode, DEBUG_MODE))
-        {
-            commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
-        }
+        // if (stringsToBeSame(executionMode, DEBUG_MODE))
+        // {
+        //     commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
+        // }
 
         if (!isFinished)
-            executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
-            printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers);
-
+            executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, memoryLabels, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
+        // printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers);
     }
-
+    showMemory(memory, memoryLabels, numberOfVars);
     showStatus(stateRegister);
     showRegisters(registers);
 }
@@ -89,7 +89,9 @@ int main()
 
     FILE *file;
     Label labels[MAX_CODE_LENGTH];
-    Number *memory;
+    // Number *memory;
+    int *memory;
+    char *memoryLabels[COMMON_WORD_LENGTH];
 
     char fileName[LONG_WORD_LENGTH];
     char codeLines[MAX_CODE_LENGTH][MAX_CODELINE_LENGTH];
@@ -126,8 +128,13 @@ int main()
 
     strcat(sourcePath, fileName);
     file = fopen(sourcePath, "r");
-    if (file != NULL) printFileLoadSuccess();
-                else { printFileLoadError(); return 0; };
+    if (file != NULL)
+        printFileLoadSuccess();
+    else
+    {
+        printFileLoadError();
+        return 0;
+    };
 
     while (!feof(file))
     {
@@ -148,7 +155,7 @@ int main()
 
     printExecutionChoose();
     fgets(executionMode, COMMON_WORD_LENGTH, stdin);
-    memory = (Number *)malloc(1);
+    memory = (int *)malloc(1);
     if (stringsToBeSame(executionMode, DEBUG_MODE))
         printDebugModeOn();
     else if (stringsToBeSame(executionMode, DEFAULT_MODE))
@@ -163,6 +170,7 @@ int main()
                    labels,
                    labelLength,
                    memory,
+                   memoryLabels,
                    &numberOfVars,
                    stateRegister,
                    codeLength,

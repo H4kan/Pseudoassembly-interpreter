@@ -5,7 +5,8 @@
 void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
                  int *registers, Label *labels,
                  int labelLength,
-                 Number *memory,
+                 int *memory,
+                 char *memoryLabels[COMMON_WORD_LENGTH],
                  int *numberOfVars,
                  char *stateRegister,
                  int *nextLineToExec,
@@ -15,7 +16,7 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
 
     if (stringsToBeSame(words[0], directives[0]))
     {
-        A_directive(registers, words, memory, numberOfVars, stateRegister);
+        A_directive(registers, words, memory, memoryLabels, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[1]))
     {
@@ -23,7 +24,7 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
     }
     else if (stringsToBeSame(words[0], directives[2]))
     {
-        S_directive(registers, words, memory, numberOfVars, stateRegister);
+        S_directive(registers, words, memory, memoryLabels, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[3]))
     {
@@ -31,7 +32,7 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
     }
     else if (stringsToBeSame(words[0], directives[4]))
     {
-        M_directive(registers, words, memory, numberOfVars, stateRegister);
+        M_directive(registers, words, memory, memoryLabels, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[5]))
     {
@@ -39,7 +40,7 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
     }
     else if (stringsToBeSame(words[0], directives[6]))
     {
-        D_directive(registers, words, memory, numberOfVars, stateRegister);
+        D_directive(registers, words, memory, memoryLabels, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[7]))
     {
@@ -47,7 +48,7 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
     }
     else if (stringsToBeSame(words[0], directives[8]))
     {
-        C_directive(registers, words, memory, numberOfVars, stateRegister);
+        C_directive(registers, words, memory, memoryLabels, numberOfVars, stateRegister);
     }
     else if (stringsToBeSame(words[0], directives[9]))
     {
@@ -71,27 +72,27 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
     }
     else if (stringsToBeSame(words[0], directives[14]))
     {
-        L_directive(registers, words, memory, numberOfVars);
+        L_directive(registers, words, memory, memoryLabels, numberOfVars);
     }
-    else if (stringsToBeSame(words[0], directives[15]))
-    {
-        LA_directive(registers, words, memory, numberOfVars);
-    }
+    // else if (stringsToBeSame(words[0], directives[15]))
+    // {
+    //     LA_directive(registers, words, memory, numberOfVars);
+    // }
     else if (stringsToBeSame(words[0], directives[16]))
     {
         LR_directive(registers, words);
     }
-    else if (stringsToBeSame(words[0], directives[17]))
-    {
-        ST_directive(registers, words, memory, numberOfVars);
-    }
+    // else if (stringsToBeSame(words[0], directives[17]))
+    // {
+    //     ST_directive(registers, words, memory, numberOfVars);
+    // }
     else if (stringsToBeSame(words[0], directives[18]))
     {
-        DC_directive(words, *nextLineToExec, labels, labelLength, memory, numberOfVars);
+        DC_directive(words, *nextLineToExec, labels, labelLength, memory, memoryLabels, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[19]))
     {
-        DS_directive(words, *nextLineToExec, labels, labelLength, memory, numberOfVars);
+        DS_directive(words, *nextLineToExec, labels, labelLength, memory, memoryLabels, numberOfVars);
     }
     else
         printUnDirective();

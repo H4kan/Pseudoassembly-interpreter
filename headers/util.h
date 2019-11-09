@@ -81,8 +81,7 @@ intptr_t *parseSecondWord(char *word, int *registers)
         registerNum[j++] = NOTHING_CHAR;
 
     // multiplying because number data type is bigger than integer
-    address = registers[parseToDecimal(registerNum)] +
-              (parseToDecimal(bytesToShift) * NUMBER_DATA_SIZE / INTEGER_SIZE);
+    address = registers[parseToDecimal(registerNum)] + parseToDecimal(bytesToShift);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
@@ -121,7 +120,7 @@ int findLabelIndexByName(Label *labels, char *name, int labelLength)
     return -1;
 }
 
-int findMemoryValue(Number *memory, int *numberOfVars, char *word, int *registers)
+int findMemoryValue(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *word, int *registers)
 {
     intptr_t *secWordHandler;
     // removing last character if it is line feed
@@ -141,8 +140,8 @@ int findMemoryValue(Number *memory, int *numberOfVars, char *word, int *register
 
         for (i = 0; i < *numberOfVars; i++)
         {
-            if (stringsToBeSame(memory[i].name, word))
-                return memory[i].value;
+            if (stringsToBeSame(memoryLabels[i], word))
+                return memory[i];
         };
     }
 
@@ -150,7 +149,7 @@ int findMemoryValue(Number *memory, int *numberOfVars, char *word, int *register
     return 0;
 }
 
-intptr_t *findMemoryAddress(Number *memory, int *numberOfVars, char *name, int *registers)
+intptr_t *findMemoryAddress(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *name, int *registers)
 {
     /* DECLARATION SECTION START */
     intptr_t *memoryAddress;
@@ -168,11 +167,11 @@ intptr_t *findMemoryAddress(Number *memory, int *numberOfVars, char *name, int *
 
     for (i = 0; i < *numberOfVars; i++)
     {
-        if (stringsToBeSame(memory[i].name, name))
-        #pragma GCC diagnostic push
+        if (stringsToBeSame(memoryLabels[i], name))
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
             memoryAddress = (intptr_t)&memory[i];
-            #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
         return memoryAddress;
     };
 
