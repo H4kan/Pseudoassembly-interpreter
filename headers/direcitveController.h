@@ -74,18 +74,18 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
     {
         L_directive(registers, words, memory, memoryLabels, numberOfVars);
     }
-    // else if (stringsToBeSame(words[0], directives[15]))
-    // {
-    //     LA_directive(registers, words, memory, numberOfVars);
-    // }
+    else if (stringsToBeSame(words[0], directives[15]))
+    {
+        LA_directive(registers, words, memory, memoryLabels, numberOfVars);
+    }
     else if (stringsToBeSame(words[0], directives[16]))
     {
         LR_directive(registers, words);
     }
-    // else if (stringsToBeSame(words[0], directives[17]))
-    // {
-    //     ST_directive(registers, words, memory, numberOfVars);
-    // }
+    else if (stringsToBeSame(words[0], directives[17]))
+    {
+        ST_directive(registers, words, memory, memoryLabels, numberOfVars);
+    }
     else if (stringsToBeSame(words[0], directives[18]))
     {
         DC_directive(words, *nextLineToExec, labels, labelLength, memory, memoryLabels, numberOfVars);

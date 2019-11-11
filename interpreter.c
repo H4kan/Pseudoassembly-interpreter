@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdint.h>
+// #include <stdint.h>
 
 #include "headers/settings.h"
 #include "headers/outputFormatter.h"
@@ -69,14 +69,14 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
 
     while (!isFinished && nextLineToExec <= codeLength)
     {
-        // if (stringsToBeSame(executionMode, DEBUG_MODE))
-        // {
-        //     commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
-        // }
+        if (stringsToBeSame(executionMode, DEBUG_MODE))
+        {
+            commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, memory, memoryLabels, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
+        }
 
         if (!isFinished)
             executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, memoryLabels, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
-        // printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers);
+        printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, memory, memoryLabels, numberOfVars, labels, labelLength, registers);
     }
     showMemory(memory, memoryLabels, numberOfVars);
     showStatus(stateRegister);

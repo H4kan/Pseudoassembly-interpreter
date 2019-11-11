@@ -47,13 +47,13 @@ int parseToDecimal(char *word)
     return sign * result;
 }
 
-intptr_t *parseSecondWord(char *word, int *registers)
+int *parseSecondWord(char *word, int *registers)
 {
     /* DECLARATION SECTION START */
     char bytesToShift[COMMON_WORD_LENGTH];
     char registerNum[REG_CHAR_LENGTH];
     int address;
-    intptr_t *result;
+    int *result;
     int i = 0;
     int j = 0;
     /* DECLARATION SECTION END */
@@ -70,7 +70,6 @@ intptr_t *parseSecondWord(char *word, int *registers)
         registerNum[j] = word[i + j];
         j++;
     }
-
     while (i <= COMMON_WORD_LENGTH)
     {
         bytesToShift[i - 1] = NOTHING_CHAR;
@@ -122,7 +121,7 @@ int findLabelIndexByName(Label *labels, char *name, int labelLength)
 
 int findMemoryValue(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *word, int *registers)
 {
-    intptr_t *secWordHandler;
+    int *secWordHandler;
     // removing last character if it is line feed
     if ((int)word[strlen(word) - 1] == LINEFEED_ASCII)
         word[strlen(word) - 1] = NOTHING_CHAR;
@@ -149,10 +148,10 @@ int findMemoryValue(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *nu
     return 0;
 }
 
-intptr_t *findMemoryAddress(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *name, int *registers)
+int *findMemoryAddress(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *name, int *registers)
 {
     /* DECLARATION SECTION START */
-    intptr_t *memoryAddress;
+    int *memoryAddress;
     int i;
     /* DECLARATION SECTION END */
 
@@ -179,7 +178,7 @@ intptr_t *findMemoryAddress(int *memory, char *memoryLabels[COMMON_WORD_LENGTH],
     return 0;
 }
 
-int findMemoryIndex(Number *memory, int *numberOfVars, char *name)
+int findMemoryIndex(char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *name)
 {
     /* DECLARATION SECTION START */
     int i;
@@ -191,7 +190,7 @@ int findMemoryIndex(Number *memory, int *numberOfVars, char *name)
 
     for (i = 0; i < *numberOfVars; i++)
     {
-        if (stringsToBeSame(memory[i].name, name))
+        if (stringsToBeSame(memoryLabels[i], name))
             return i;
     };
 

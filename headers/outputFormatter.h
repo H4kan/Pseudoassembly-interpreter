@@ -77,7 +77,7 @@ void showRegisters(int *registers)
     /* DECLARATION SECTION END */
     printf(BLU "Registers\n" RESET);
     for (i = 0; i < NUMBER_OF_REGS; i++)
-        printf(YEL "Register #%02d:  " RESET "%08x\n", i, registers[i]);
+        printf(YEL "Register #%02d:  " RESET "%08d\n", i, registers[i]);
     printf("\n");
 }
 
@@ -88,7 +88,7 @@ void showMemory(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *number
     /* DECLARATION SECTION END */
     printf(BLU "Memory variables\n" RESET);
     for (i = 0; i < *numberOfVars; i++)
-        printf(YEL "%13s  " RESET "%08x\n", memoryLabels[i], memory[i]);
+        printf(YEL "%13s  " RESET "%08d\n", memoryLabels[i], memory[i]);
     printf("\n");
 }
 
@@ -190,15 +190,15 @@ void printTitle()
     printf("------------------------------\n\n");
 }
 
-// void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char *stateRegister, Number *memory, int *numberOfVars, Label *labels, int labelLength, int *registers)
-// {
-//     if (trackStatus)
-//         showStatus(stateRegister);
-//     if (trackRegisters)
-//         showRegisters(registers);
-//     if (trackMemory)
-//         showMemory(memory, memoryLabels, numberOfVars);
-// }
+void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char *stateRegister, int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, Label *labels, int labelLength, int *registers)
+{
+    if (trackStatus)
+        showStatus(stateRegister);
+    if (trackRegisters)
+        showRegisters(registers);
+    if (trackMemory)
+        showMemory(memory, memoryLabels, numberOfVars);
+}
 
 void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemory, char *stateRegister, int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, Label *labels, int labelLength, int *registers, char *executionMode, bool *isFinished)
 {
@@ -273,7 +273,7 @@ void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemor
     {
         printf(RED "Unknown command\n" RESET);
     }
-    // commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
+    commandController(trackRegisters, trackStatus, trackMemory, stateRegister, memory, memoryLabels, numberOfVars, labels, labelLength, registers, executionMode, isFinished);
 }
 
 #endif
