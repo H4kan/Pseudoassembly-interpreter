@@ -210,12 +210,11 @@ void ST_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memo
     memory[findMemoryIndex(memoryLabels, numberOfVars, words[2])] = registers[parseToDecimal(words[1])];
 }
 
-void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
+void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, int **memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
 {
     /* DECLARATION SECTION START */
     char newNumberName[COMMON_WORD_LENGTH];
     /* DECLARATION SECTION END */
-
     strcpy(newNumberName, labels[findLabelIndexByLine(labels, lineIndex, labelLength)].name);
     if (isArrayInitialization(words[1]))
     {
@@ -249,14 +248,16 @@ void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
 
         newNumberValue = extractValueFromIntegerString(wordWithoutSize);
         *numberOfVars = *numberOfVars + arraySize;
-        memory = (int *)realloc(memory, *numberOfVars * sizeof(int));
+
         memoryLabels[*numberOfVars - arraySize] = (char *)malloc(COMMON_WORD_LENGTH * sizeof(char));
-        memory[*numberOfVars - arraySize] = newNumberValue;
+
+        *memory = (int *)realloc(*memory, *numberOfVars * sizeof(int));
+        (*memory)[*numberOfVars - arraySize] = newNumberValue;
         for (i = 1; i < arraySize; i++)
         {
             memoryLabels[*numberOfVars - arraySize + i] = (char *)malloc(sizeof(char));
             memoryLabels[*numberOfVars - arraySize + i] = "\0";
-            memory[*numberOfVars - arraySize + i] = newNumberValue;
+            (*memory)[*numberOfVars - arraySize + i] = newNumberValue;
         }
         strcpy(memoryLabels[*numberOfVars - arraySize], newNumberName);
     }
@@ -266,10 +267,10 @@ void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
         int newNumberValue = extractValueFromIntegerString(words[1]);
         /* DECLARATION SECTION END */
         *numberOfVars = *numberOfVars + 1;
-        memory[*numberOfVars - 1] = (intptr_t)malloc(sizeof(int));
+        *memory = (int *)realloc(*memory, *numberOfVars * sizeof(int));
         memoryLabels[*numberOfVars - 1] = (char *)malloc(COMMON_WORD_LENGTH * sizeof(char));
         strcpy(memoryLabels[*numberOfVars - 1], newNumberName);
-        memory[*numberOfVars - 1] = newNumberValue;
+        (*memory)[*numberOfVars - 1] = newNumberValue;
     }
 }
 

@@ -52,7 +52,7 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
                     int *registers,
                     Label *labels,
                     int labelLength,
-                    int *memory,
+                    int **memory,
                     char *memoryLabels[COMMON_WORD_LENGTH],
                     int *numberOfVars,
                     char *stateRegister,
@@ -71,14 +71,14 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
     {
         if (stringsToBeSame(executionMode, DEBUG_MODE))
         {
-            commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, memory, memoryLabels, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
+            commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, *memory, memoryLabels, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
         }
 
         if (!isFinished)
             executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, memoryLabels, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
-        printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, memory, memoryLabels, numberOfVars, labels, labelLength, registers);
+        printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, *memory, memoryLabels, numberOfVars, labels, labelLength, registers);
     }
-    showMemory(memory, memoryLabels, numberOfVars);
+    // showMemory(*memory, memoryLabels, numberOfVars);
     showStatus(stateRegister);
     showRegisters(registers);
 }
@@ -86,13 +86,11 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
 int main()
 {
     /* DECLARATION SECTION START */
+    int **memory = malloc(sizeof(intptr_t));
+    char *memoryLabels[COMMON_WORD_LENGTH];
 
     FILE *file;
     Label labels[MAX_CODE_LENGTH];
-    // Number *memory;
-    int *memory;
-    char *memoryLabels[COMMON_WORD_LENGTH];
-
     char fileName[LONG_WORD_LENGTH];
     char codeLines[MAX_CODE_LENGTH][MAX_CODELINE_LENGTH];
     char words[MAX_CODE_LENGTH][MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH];
@@ -155,7 +153,7 @@ int main()
 
     printExecutionChoose();
     fgets(executionMode, COMMON_WORD_LENGTH, stdin);
-    memory = (int *)malloc(1);
+    *memory = (int *)malloc(1);
     if (stringsToBeSame(executionMode, DEBUG_MODE))
         printDebugModeOn();
     else if (stringsToBeSame(executionMode, DEFAULT_MODE))
