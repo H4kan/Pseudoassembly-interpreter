@@ -51,6 +51,7 @@
 
 typedef struct Label Label;
 typedef struct Number Number;
+typedef struct MemLabel MemLabel;
 
 /* DECLARATION SECTION START */
 char directives[NUMBER_OF_DIRS][DIR_CHAR_LENGTH] = {
@@ -73,6 +74,12 @@ struct Number
 {
     int value;
     char name[COMMON_WORD_LENGTH];
+};
+
+struct MemLabel 
+{
+    int memIndex;
+    char label[COMMON_WORD_LENGTH];
 };
 /* DECLARATION SECTION END */
 #endif

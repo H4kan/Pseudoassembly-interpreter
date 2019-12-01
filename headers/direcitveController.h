@@ -6,7 +6,8 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
                  int *registers, Label *labels,
                  int labelLength,
                  int **memory,
-                 char *memoryLabels[COMMON_WORD_LENGTH],
+                 MemLabel *memoryLabels,
+                 int *currMemLabelLength,
                  int *numberOfVars,
                  char *stateRegister,
                  int *nextLineToExec,
@@ -88,11 +89,11 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
     }
     else if (stringsToBeSame(words[0], directives[18]))
     {
-        DC_directive(words, *nextLineToExec, labels, labelLength, memory, memoryLabels, numberOfVars);
+        DC_directive(words, *nextLineToExec, labels, labelLength, memory, memoryLabels, currMemLabelLength, numberOfVars);
     }
     else if (stringsToBeSame(words[0], directives[19]))
     {
-        DS_directive(words, *nextLineToExec, labels, labelLength, *memory, memoryLabels, numberOfVars);
+        DS_directive(words, *nextLineToExec, labels, labelLength, *memory, memoryLabels, currMemLabelLength, numberOfVars);
     }
     else
         printUnDirective();

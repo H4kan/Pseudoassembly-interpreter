@@ -53,7 +53,8 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
                     Label *labels,
                     int labelLength,
                     int **memory,
-                    char *memoryLabels[COMMON_WORD_LENGTH],
+                    MemLabel memoryLabels[MAX_CODE_LENGTH],
+                    int *currMemLabelLength,
                     int *numberOfVars,
                     char *stateRegister,
                     int codeLength,
@@ -64,7 +65,7 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
     bool isFinished = false;
     bool trackRegisters = false;
     bool trackStatus = false;
-    bool trackMemory = false;
+    bool trackMemory = true;
     /* DECLARATION SECTION END */
 
     while (!isFinished && nextLineToExec <= codeLength)
@@ -73,9 +74,8 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
         {
             commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, *memory, memoryLabels, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
         }
-
         if (!isFinished)
-            executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, memoryLabels, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
+            executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, memoryLabels, currMemLabelLength, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
         printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, *memory, memoryLabels, numberOfVars, labels, labelLength, registers);
     }
     // showMemory(*memory, memoryLabels, numberOfVars);
@@ -87,7 +87,7 @@ int main()
 {
     /* DECLARATION SECTION START */
     int **memory = malloc(sizeof(intptr_t));
-    char *memoryLabels[COMMON_WORD_LENGTH];
+    MemLabel memoryLabels[MAX_CODE_LENGTH];
 
     FILE *file;
     Label labels[MAX_CODE_LENGTH];
@@ -101,6 +101,7 @@ int main()
 
     int registers[NUMBER_OF_REGS];
     int labelLength = 0;
+    int currMemLabelLength = 0;
     int numberOfVars = 0;
     int codeLength = 0;
 
@@ -169,6 +170,7 @@ int main()
                    labelLength,
                    memory,
                    memoryLabels,
+                   &currMemLabelLength,
                    &numberOfVars,
                    stateRegister,
                    codeLength,

@@ -2,7 +2,7 @@
 
 #define directivePanel
 
-void A_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *stateRegister)
+void A_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, MemLabel *memoryLabels, int *numberOfVars, char *stateRegister)
 {
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
@@ -22,7 +22,7 @@ void AR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void S_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *stateRegister)
+void S_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, MemLabel *memoryLabels, int *numberOfVars, char *stateRegister)
 {
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
@@ -42,7 +42,7 @@ void SR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void M_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *stateRegister)
+void M_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, MemLabel *memoryLabels, int *numberOfVars, char *stateRegister)
 {
     /* DECLARATION SECTION START */
     int regIndex = parseToDecimal(words[1]);
@@ -62,7 +62,7 @@ void MR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
     switchRegisterStatus(stateRegister, registers[regIndex]);
 }
 
-void D_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *stateRegister)
+void D_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, MemLabel *memoryLabels, int *numberOfVars, char *stateRegister)
 {
     int memValHandler = findMemoryValue(memory, memoryLabels, numberOfVars, words[2], registers);
     if (memValHandler)
@@ -98,7 +98,7 @@ void DR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], char *sta
     }
 }
 
-void C_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *stateRegister)
+void C_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, MemLabel *memoryLabels, int *numberOfVars, char *stateRegister)
 {
 
     /* DECLARATION SECTION START */
@@ -178,12 +178,12 @@ void JN_directive(char (*words)[MAX_WORD_LINE_LENGTH], Label *labels, int labelL
     }
 }
 
-void L_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
+void L_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, MemLabel *memoryLabels, int *numberOfVars)
 {
     registers[parseToDecimal(words[1])] = findMemoryValue(memory, memoryLabels, numberOfVars, words[2], registers);
 }
 
-void LA_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
+void LA_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, MemLabel *memoryLabels, int *numberOfVars)
 {
     registers[parseToDecimal(words[1])] = (intptr_t)findMemoryAddress(memory, memoryLabels, numberOfVars, words[2], registers);
 }
@@ -193,9 +193,9 @@ void LR_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH])
     registers[parseToDecimal(words[1])] = registers[parseToDecimal(words[2])];
 }
 
-void ST_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
+void ST_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memory, MemLabel *memoryLabels, int *numberOfVars)
 {
-    char secondWord[strlen(words[2])];
+    char secondWord[COMMON_WORD_LENGTH];
     strcpy(secondWord, words[2]);
     if ((int)secondWord[strlen(secondWord) - 1] == LINEFEED_ASCII)
         secondWord[strlen(secondWord) - 1] = NOTHING_CHAR;
@@ -210,7 +210,7 @@ void ST_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memo
     memory[findMemoryIndex(memoryLabels, numberOfVars, words[2])] = registers[parseToDecimal(words[1])];
 }
 
-void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, int **memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
+void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, int **memory, MemLabel *memoryLabels, int *currMemLabelLength, int *numberOfVars)
 {
     /* DECLARATION SECTION START */
     char newNumberName[COMMON_WORD_LENGTH];
@@ -248,18 +248,16 @@ void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
 
         newNumberValue = extractValueFromIntegerString(wordWithoutSize);
         *numberOfVars = *numberOfVars + arraySize;
-
-        memoryLabels[*numberOfVars - arraySize] = (char *)malloc(COMMON_WORD_LENGTH * sizeof(char));
-
-        *memory = (int *)realloc(*memory, *numberOfVars * sizeof(int));
-        (*memory)[*numberOfVars - arraySize] = newNumberValue;
-        for (i = 1; i < arraySize; i++)
+        memory = (int *)realloc(*memory, *numberOfVars * sizeof(int));
+        for (i = 0; i < arraySize; i++)
         {
-            memoryLabels[*numberOfVars - arraySize + i] = (char *)malloc(sizeof(char));
-            memoryLabels[*numberOfVars - arraySize + i] = "\0";
             (*memory)[*numberOfVars - arraySize + i] = newNumberValue;
         }
-        strcpy(memoryLabels[*numberOfVars - arraySize], newNumberName);
+        if (strlen(newNumberName)) {
+        strcpy(memoryLabels[*currMemLabelLength].label, newNumberName);
+        memoryLabels[*currMemLabelLength].memIndex = *numberOfVars - arraySize;
+        *currMemLabelLength = *currMemLabelLength + 1;
+        }
     }
     else
     {
@@ -268,13 +266,16 @@ void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
         /* DECLARATION SECTION END */
         *numberOfVars = *numberOfVars + 1;
         *memory = (int *)realloc(*memory, *numberOfVars * sizeof(int));
-        memoryLabels[*numberOfVars - 1] = (char *)malloc(COMMON_WORD_LENGTH * sizeof(char));
-        strcpy(memoryLabels[*numberOfVars - 1], newNumberName);
+         if (strlen(newNumberName)) {
+        strcpy(memoryLabels[*currMemLabelLength].label, newNumberName);
+        memoryLabels[*currMemLabelLength].memIndex = *numberOfVars - 1;
+        *currMemLabelLength = *currMemLabelLength + 1;
+        }
         (*memory)[*numberOfVars - 1] = newNumberValue;
     }
 }
 
-void DS_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
+void DS_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *labels, int labelLength, int *memory, MemLabel *memoryLabels, int *currMemLabelLength, int *numberOfVars)
 {
     /* DECLARATION SECTION START */
     char newNumberName[COMMON_WORD_LENGTH];
@@ -306,20 +307,22 @@ void DS_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
 
         *numberOfVars = *numberOfVars + arraySize;
         memory = (int *)realloc(memory, *numberOfVars * sizeof(int));
-        memoryLabels[*numberOfVars - arraySize] = (char *)malloc(COMMON_WORD_LENGTH * sizeof(char));
-        for (i = 1; i < arraySize; i++)
-        {
-            memoryLabels[*numberOfVars - arraySize + i] = (char *)malloc(sizeof(char));
-            memoryLabels[*numberOfVars - arraySize + i] = "\0";
+         if (strlen(newNumberName)) {
+        strcpy(memoryLabels[*currMemLabelLength].label, newNumberName);
+        memoryLabels[*currMemLabelLength].memIndex = *numberOfVars - arraySize;
+        *currMemLabelLength = *currMemLabelLength + 1;
         }
-        strcpy(memoryLabels[*numberOfVars - arraySize], newNumberName);
     }
     else
     {
         *numberOfVars = *numberOfVars + 1;
         memory = (int *)realloc(memory, *numberOfVars * sizeof(int));
-        memoryLabels[*numberOfVars - 1] = (char *)malloc(COMMON_WORD_LENGTH * sizeof(char));
-        strcpy(memoryLabels[*numberOfVars - 1], newNumberName);
+        // memoryLabels[*numberOfVars - 1] = (char *)malloc(COMMON_WORD_LENGTH * sizeof(char));
+         if (strlen(newNumberName)) {
+        strcpy(memoryLabels[*currMemLabelLength].label, newNumberName);
+        memoryLabels[*currMemLabelLength].memIndex = *numberOfVars - 1;
+        *currMemLabelLength = *currMemLabelLength + 1;
+        }
     }
 }
 

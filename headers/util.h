@@ -119,7 +119,7 @@ int findLabelIndexByName(Label *labels, char *name, int labelLength)
     return -1;
 }
 
-int findMemoryValue(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *word, int *registers)
+int findMemoryValue(int *memory, MemLabel *memoryLabels, int *numberOfVars, char *word, int *registers)
 {
     int *secWordHandler;
     // removing last character if it is line feed
@@ -139,7 +139,7 @@ int findMemoryValue(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *nu
 
         for (i = 0; i < *numberOfVars; i++)
         {
-            if (stringsToBeSame(memoryLabels[i], word))
+            if (stringsToBeSame(memoryLabels[i].label, word))
                 return memory[i];
         };
     }
@@ -148,7 +148,7 @@ int findMemoryValue(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *nu
     return 0;
 }
 
-int *findMemoryAddress(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *name, int *registers)
+int *findMemoryAddress(int *memory, MemLabel *memoryLabels, int *numberOfVars, char *name, int *registers)
 {
     /* DECLARATION SECTION START */
     int *memoryAddress;
@@ -166,7 +166,7 @@ int *findMemoryAddress(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int 
 
     for (i = 0; i < *numberOfVars; i++)
     {
-        if (stringsToBeSame(memoryLabels[i], name))
+        if (stringsToBeSame(memoryLabels[i].label, name))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
             memoryAddress = (intptr_t)&memory[i];
@@ -178,7 +178,7 @@ int *findMemoryAddress(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int 
     return 0;
 }
 
-int findMemoryIndex(char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, char *name)
+int findMemoryIndex(MemLabel *memoryLabels, int *numberOfVars, char *name)
 {
     /* DECLARATION SECTION START */
     int i;
@@ -190,7 +190,7 @@ int findMemoryIndex(char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, c
 
     for (i = 0; i < *numberOfVars; i++)
     {
-        if (stringsToBeSame(memoryLabels[i], name))
+        if (stringsToBeSame(memoryLabels[i].label, name))
             return i;
     };
 

@@ -81,14 +81,17 @@ void showRegisters(int *registers)
     printf("\n");
 }
 
-void showMemory(int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars)
+void showMemory(int *memory, MemLabel *memoryLabels, int *numberOfVars)
 {
     /* DECLARATION SECTION START */
-    int i;
+    int i, j;
+    j = 0;
     /* DECLARATION SECTION END */
     printf(BLU "Memory variables\n" RESET);
     for (i = 0; i < *numberOfVars; i++)
-        printf(YEL "%13s  " RESET "%08d\n", memoryLabels[i], memory[i]);
+    if (memoryLabels[j].memIndex == i)
+        printf(YEL "%13s  " RESET "%08d\n", memoryLabels[j++].label, memory[i]);
+        else printf(YEL "%13s  " RESET "%08d\n", "\0", memory[i]);
     printf("\n");
 }
 
@@ -190,7 +193,7 @@ void printTitle()
     printf("------------------------------\n\n");
 }
 
-void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char *stateRegister, int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, Label *labels, int labelLength, int *registers)
+void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char *stateRegister, int *memory, MemLabel *memoryLabels, int *numberOfVars, Label *labels, int labelLength, int *registers)
 {
     if (trackStatus)
         showStatus(stateRegister);
@@ -200,7 +203,7 @@ void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char 
         showMemory(memory, memoryLabels, numberOfVars);
 }
 
-void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemory, char *stateRegister, int *memory, char *memoryLabels[COMMON_WORD_LENGTH], int *numberOfVars, Label *labels, int labelLength, int *registers, char *executionMode, bool *isFinished)
+void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemory, char *stateRegister, int *memory, MemLabel *memoryLabels, int *numberOfVars, Label *labels, int labelLength, int *registers, char *executionMode, bool *isFinished)
 {
     /* DECLARATION SECTION START */
     char commandHandler[LONG_WORD_LENGTH];
