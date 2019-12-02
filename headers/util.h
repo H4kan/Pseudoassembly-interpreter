@@ -119,7 +119,7 @@ int findLabelIndexByName(Label *labels, char *name, int labelLength)
     return -1;
 }
 
-int findMemoryValue(int *memory, MemLabel *memoryLabels, int *numberOfVars, char *word, int *registers)
+int findMemoryValue(int *memory, MemLabel *memoryLabels, int *numberOfVars, char *word, int *registers, int *arrowMemory)
 {
     int *secWordHandler;
     // removing last character if it is line feed
@@ -139,8 +139,10 @@ int findMemoryValue(int *memory, MemLabel *memoryLabels, int *numberOfVars, char
 
         for (i = 0; i < *numberOfVars; i++)
         {
-            if (stringsToBeSame(memoryLabels[i].label, word))
-                return memory[i];
+            if (stringsToBeSame(memoryLabels[i].label, word)){
+                *arrowMemory = memoryLabels[i].memIndex;
+                return memory[memoryLabels[i].memIndex];
+            }
         };
     }
 
@@ -148,7 +150,7 @@ int findMemoryValue(int *memory, MemLabel *memoryLabels, int *numberOfVars, char
     return 0;
 }
 
-int *findMemoryAddress(int *memory, MemLabel *memoryLabels, int *numberOfVars, char *name, int *registers)
+int *findMemoryAddress(int *memory, MemLabel *memoryLabels, int *numberOfVars, char *name, int *registers, int *arrowMemory)
 {
     /* DECLARATION SECTION START */
     int *memoryAddress;
@@ -166,19 +168,21 @@ int *findMemoryAddress(int *memory, MemLabel *memoryLabels, int *numberOfVars, c
 
     for (i = 0; i < *numberOfVars; i++)
     {
-        if (stringsToBeSame(memoryLabels[i].label, name))
+        if (stringsToBeSame(memoryLabels[i].label, name)){
+            *arrowMemory = memoryLabels[i].memIndex;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-conversion"
-            memoryAddress = (intptr_t)&memory[i];
+            memoryAddress = (intptr_t)&memory[memoryLabels[i].memIndex];
 #pragma GCC diagnostic pop
         return memoryAddress;
+        }
     };
 
     printUndWord(name);
     return 0;
 }
 
-int findMemoryIndex(MemLabel *memoryLabels, int *numberOfVars, char *name)
+int findMemoryIndex(MemLabel *memoryLabels, int *numberOfVars, char *name, int *arrowMemory)
 {
     /* DECLARATION SECTION START */
     int i;
@@ -190,8 +194,10 @@ int findMemoryIndex(MemLabel *memoryLabels, int *numberOfVars, char *name)
 
     for (i = 0; i < *numberOfVars; i++)
     {
-        if (stringsToBeSame(memoryLabels[i].label, name))
-            return i;
+        if (stringsToBeSame(memoryLabels[i].label, name)){
+            *arrowMemory = memoryLabels[i].memIndex;
+            return memoryLabels[i].memIndex;
+        }
     };
 
     printUndWord(name);

@@ -67,6 +67,7 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
 {
     /* DECLARATION SECTION START */
     int nextLineToExec = START_LINE_INDEX;
+    int arrowMemory = 0;
     bool isFinished = false;
     bool trackRegisters = false;
     bool trackStatus = false;
@@ -75,19 +76,11 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
 
     while (!isFinished && nextLineToExec <= codeLength)
     {
-        // if (stringsToBeSame(executionMode, DEBUG_MODE))
-        // {
-        // commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, *memory, memoryLabels, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
-        // }
-        printEverything(registers, terminalWords, codeLength, nextLineToExec);
-        commandController(&trackRegisters, &trackStatus, &trackMemory, stateRegister, *memory, memoryLabels, numberOfVars, labels, labelLength, registers, executionMode, &isFinished);
+        printEverything(registers, terminalWords, codeLines, codeLength, nextLineToExec, *memory, memoryLabels, numberOfVars, arrowMemory);
+        if (stringsToBeSame(executionMode, DEBUG_MODE)) commandController(executionMode, &isFinished);
         if (!isFinished)
-            executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, memoryLabels, currMemLabelLength, numberOfVars, stateRegister, &nextLineToExec, &isFinished);
-        // printTracked(trackRegisters, trackStatus, trackMemory, stateRegister, *memory, memoryLabels, numberOfVars, labels, labelLength, registers);
+            executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, memoryLabels, currMemLabelLength, numberOfVars, stateRegister, &nextLineToExec, &isFinished, &arrowMemory);
     }
-    // showMemory(*memory, memoryLabels, numberOfVars);
-    // showStatus(stateRegister);
-    // showRegisters(registers);
 }
 
 int main()
@@ -118,8 +111,6 @@ int main()
     // fix MinGW scanf issue
     setvbuf(stdout, 0, _IONBF, 0);
 
-    printTitle();
-
     strcpy(sourcePath, SOURCE_DIRECTORY_PATH);
     strcpy(stateRegister, ZERO_STATUS);
 
@@ -146,7 +137,7 @@ int main()
     while (!feof(file))
     {
         fgets(codeLineHandler, MAX_CODELINE_LENGTH, file);
-        if (strlen(codeLineHandler) != 1)
+        if (strlen(codeLineHandler) > 1)
         {
             strcpy(codeLines[codeLength], codeLineHandler);
             codeLength++;
@@ -159,19 +150,18 @@ int main()
 
     fclose(file);
     initializeProgram(codeLines, words, codeLength, labels, &labelLength, terminalWords);
-
-    // printExecutionChoose();
-    // fgets(executionMode, COMMON_WORD_LENGTH, stdin);
+    printExecutionChoose();
+    fgets(executionMode, COMMON_WORD_LENGTH, stdin);
     *memory = (int *)malloc(1);
-    // if (stringsToBeSame(executionMode, DEBUG_MODE))
-    //     printDebugModeOn();
-    // else if (stringsToBeSame(executionMode, DEFAULT_MODE))
-    //     printDebugModeOff();
-    // else
-    // {
-    //     printInvalidArgument();
-    //     printDebugModeOff();
-    // }
+    if (stringsToBeSame(executionMode, DEBUG_MODE))
+        printDebugModeOn();
+    else if (stringsToBeSame(executionMode, DEFAULT_MODE))
+        printDebugModeOff();
+    else
+    {
+        printInvalidArgument();
+        printDebugModeOff();
+    }
     executeProgram(words,
                    registers,
                    labels,
