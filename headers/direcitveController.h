@@ -4,15 +4,11 @@
 
 void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
                  int *registers, Label *labels,
-                 int labelLength,
-                 int **memory,
+                 int labelLength, int **memory,
                  MemLabel *memoryLabels,
-                 int *currMemLabelLength,
-                 int *numberOfVars,
-                 char *stateRegister,
-                 int *nextLineToExec,
-                 bool *isFinished,
-                 int *arrowMemory)
+                 int *currMemLabelLength, int *numberOfVars,
+                 char *stateRegister, int *nextLineToExec,
+                 bool *isFinished, int *arrowMemory)
 {
     if (stringsToBeSame(words[0], directives[0]))
     {
@@ -96,7 +92,6 @@ void executeLine(char (*words)[MAX_WORD_LINE_LENGTH],
     }
     else
         printUnDirective();
-
     *nextLineToExec = *nextLineToExec + 1;
 }
 #endif

@@ -18,7 +18,7 @@
 
 #define DIR_CHAR_LENGTH 3
 #define REG_CHAR_LENGTH 3
-#define STATE_REG_LENGTH 2
+#define DBL_CHAR_LENGTH 2
 /* MAX CHAR LENGTH END */
 
 /* CHAR START */
@@ -51,6 +51,14 @@
 #define TERMINAL_CHAR_SIZE 271
 #define TERMINAL_LENGTH 56
 #define REG_TERM_DIST 6
+
+#define NEXT_CMD "next"
+#define EXIT_DEBUG_CMD "skip"
+#define EXIT_PROGRAM_CMD "exit"
+
+#define DEFAULT_MODE "default"
+#define DEBUG_MODE "debug"
+#define DEFAULT_SOURCE_FILENAME "sample.txt"
 /* OTHER END */
 
 typedef struct Label Label;
@@ -67,19 +75,16 @@ char directives[NUMBER_OF_DIRS][DIR_CHAR_LENGTH] = {
     "J\0", "JZ", "JP", "JN",
     "L\0", "LA", "LR", "ST",
     "DC", "DS"};
-
 struct Label
 {
     int lineIndex;
     char name[COMMON_WORD_LENGTH];
 };
-
 struct Number
 {
     int value;
     char name[COMMON_WORD_LENGTH];
 };
-
 struct MemLabel 
 {
     int memIndex;
