@@ -50,6 +50,7 @@
 
 #define TERMINAL_CHAR_SIZE 271
 #define TERMINAL_LENGTH 56
+#define REG_TERM_DIST 6
 /* OTHER END */
 
 typedef struct Label Label;

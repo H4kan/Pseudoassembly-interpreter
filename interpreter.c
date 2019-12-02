@@ -72,11 +72,12 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
     bool trackRegisters = false;
     bool trackStatus = false;
     bool trackMemory = true;
+    int i;
     /* DECLARATION SECTION END */
-
+    for (i = 0; i < MAX_CODE_LENGTH; i++) memoryLabels[i].memIndex = -1;
     while (!isFinished && nextLineToExec <= codeLength)
     {
-        printEverything(registers, terminalWords, codeLines, codeLength, nextLineToExec, *memory, memoryLabels, numberOfVars, arrowMemory);
+        printEverything(registers, stateRegister, terminalWords, codeLines, codeLength, nextLineToExec, *memory, memoryLabels, numberOfVars, arrowMemory);
         if (stringsToBeSame(executionMode, DEBUG_MODE)) commandController(executionMode, &isFinished);
         if (!isFinished)
             executeLine(words[nextLineToExec - 1], registers, labels, labelLength, memory, memoryLabels, currMemLabelLength, numberOfVars, stateRegister, &nextLineToExec, &isFinished, &arrowMemory);

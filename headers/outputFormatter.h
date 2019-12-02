@@ -166,15 +166,22 @@ void printRow(char *word1, char *word2, char *word3) {
     printf("\n");
 }
 
-bool hasLabel(int lineIndex, MemLabel *memoryLabels, int *numberOfVars) {
+bool hasLabel(int lineIndex, MemLabel *memoryLabels, int length) {
     int i;
-    for (i = 0; i < *numberOfVars; i++)
+    for (i = 0; i < length; i++)
         if (memoryLabels[i].memIndex == lineIndex) return true;
     return false;
 }
+int findMemLabelIndexByLine(int lineIndex, MemLabel *memoryLabels, int length) {
+    int i;
+    for (i = 0; i < length; i++) {
+        if(memoryLabels[i].memIndex == lineIndex) return i;
+    }
+}
 
 void printEverything(
-    int *registers, 
+    int *registers,
+    char *stateRegister, 
     char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH], 
     char codeLines[MAX_CODE_LENGTH][MAX_CODELINE_LENGTH], 
     int codeLength, 
@@ -192,16 +199,9 @@ void printEverything(
     int printCodeStart = 0;
     int printMemStart = 0;
 
-    sprintf(middColScheme[0], "------------------------------");
-    for (i = 1; i < 2* NUMBER_OF_REGS; i+=2) {
-        sprintf(middColScheme[i], "%02d         |          %08d", i / 2, registers[i / 2]); 
-        sprintf(middColScheme[i + 1], "------------------------------");      
-    }
-    while (i < TERMINAL_LENGTH) {sprintf(middColScheme[i], " "); i++;};
-
     sprintf(leftColScheme[0], "");
     if (nextLineToExec - 1 > TERMINAL_LENGTH / 4 + 2 * printCodeStart) 
-        printCodeStart += nextLineToExec -1 - TERMINAL_LENGTH / 4;
+        printCodeStart = nextLineToExec -1 - TERMINAL_LENGTH / 4;
         else if (nextLineToExec - 1 < printCodeStart) printCodeStart = nextLineToExec - 1 - TERMINAL_LENGTH / 4 > 0 ? nextLineToExec - 1 - TERMINAL_LENGTH / 4 : 0;
     for (i = 2 * printCodeStart; i < TERMINAL_LENGTH + 2 * printCodeStart; i+=2) {
         strcpy(arrowHandler, "");
@@ -226,23 +226,42 @@ void printEverything(
 
     sprintf(rightColScheme[0], "");
     j = 0;
-    // if (arrowMemory > TERMINAL_LENGTH / 4 + 2 * printMemStart)
-    //     printMemStart = arrowMemory -  TERMINAL_LENGTH / 4;
-    for (i = 0; i < 2*(*numberOfVars); i+= 2) {
+    if (arrowMemory > TERMINAL_LENGTH / 4 + 2 * printMemStart)
+        printMemStart += arrowMemory -  TERMINAL_LENGTH / 4;
+        else if (arrowMemory < printMemStart) printMemStart = printMemStart - TERMINAL_LENGTH / 4 > 0 ? arrowMemory - TERMINAL_LENGTH / 4 : 0;
+    for (i = 2 * printMemStart; i < TERMINAL_LENGTH + 2 * printMemStart; i+= 2) {
+        if (i / 2 >= *numberOfVars) {
+            sprintf(rightColScheme[i + 1 - 2 * printMemStart], "");
+            sprintf(rightColScheme[i + 2 - 2 * printMemStart], "");
+            } else {
         strcpy(arrowHandler, "");
         if (arrowMemory == i / 2) strcpy(arrowHandler, "->");
-        sprintf(rightColScheme[i + 1], 
+        sprintf(rightColScheme[i + 1 - 2 * printMemStart], 
         "%2s %10d %15s %10d",
         arrowHandler,
         &(memory[i / 2]),
-        hasLabel(i / 2, memoryLabels, numberOfVars) ? memoryLabels[j++].label : " ", 
+        hasLabel(i / 2, memoryLabels, MAX_CODE_LENGTH) ? memoryLabels[findMemLabelIndexByLine(i / 2, memoryLabels, MAX_CODE_LENGTH)].label : " ", 
         memory[i / 2]);
-        sprintf(rightColScheme[i + 2], "");
+        sprintf(rightColScheme[i + 2 - 2 * printMemStart], "");
     }
+    }
+    for (i = 0; i < REG_TERM_DIST; i++) sprintf(middColScheme[i], "");
+    sprintf(middColScheme[i], "------------------------------");
+        for (i = 1; i < 2* NUMBER_OF_REGS; i+=2) {
+        sprintf(middColScheme[i + REG_TERM_DIST], "%02d         |          %08d", i / 2, registers[i / 2]); 
+        sprintf(middColScheme[i + 1 + REG_TERM_DIST], "------------------------------");      
+    }
+    i += REG_TERM_DIST;
+    sprintf(middColScheme[i++], "|%11sSTATUS%11s|", "", "");
+    sprintf(middColScheme[i++], "------------------------------");
+    sprintf(middColScheme[i++], "|%13s%s%13s|", "", stateRegister,"");
+    sprintf(middColScheme[i++], "------------------------------");
+    while (i < TERMINAL_LENGTH) {sprintf(middColScheme[i], " "); i++;};
+
     system("clear");
     printLine(TERMINAL_CHAR_SIZE);
     printMiddle("Pseudoassembly Interpreter 1.0");
-    printf("\n\n");
+    printMiddle("Author: Szymon Sieradzki");
     printLine(TERMINAL_CHAR_SIZE);
     printRow("CODE", "REGISTERS", "MEMORY");
     printLine(TERMINAL_CHAR_SIZE);
