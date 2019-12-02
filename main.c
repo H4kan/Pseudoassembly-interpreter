@@ -137,19 +137,26 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
     for (i = 0; i < MAX_CODE_LENGTH; i++) memoryLabels[i].memIndex = -1;
     while (!isFinished && nextLineToExec <= codeLength)
     {
-        printPanel(registers, stateRegister, 
-        terminalWords, codeLines, 
-        codeLength, nextLineToExec, 
-        *memory, memoryLabels, 
-        numberOfVars, arrowMemory);
-        if (stringsToBeSame(executionMode, DEBUG_MODE)) commandController(executionMode, &isFinished);
+        if (stringsToBeSame(executionMode, DEBUG_MODE)) {
+            printPanel(registers, stateRegister, 
+                       terminalWords, codeLines, 
+                       codeLength, nextLineToExec, 
+                       *memory, memoryLabels, 
+                       numberOfVars, arrowMemory);
+            commandController(executionMode, &isFinished);
+            };
         if (!isFinished) executeLine(
             words[nextLineToExec - 1], registers, 
             labels, labelLength, 
             memory, memoryLabels, 
             currMemLabelLength, numberOfVars, 
             stateRegister, &nextLineToExec, 
-            &isFinished, &arrowMemory);
+            &isFinished, &arrowMemory); 
     }
+    printPanel(registers, stateRegister, 
+               terminalWords, codeLines, 
+               codeLength, nextLineToExec, 
+               *memory, memoryLabels, 
+               numberOfVars, arrowMemory);
 }
 

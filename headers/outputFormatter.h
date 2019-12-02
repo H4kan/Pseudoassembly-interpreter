@@ -67,20 +67,23 @@ void printUndWord(char *word) {printf("%s is not defined\n", word);}
 void printUnDirective() {printf("Unknown directive\n");}
 
 void printLine(int lineLength) {
-    for (int i = 0; i < lineLength; i++) printf("-");
+    int i;
+    for (i = 0; i < lineLength; i++) printf("-");
     printf("\n");
 }
 
 void printMiddle(char *word) {
-    for (int i = 0; i < (TERMINAL_CHAR_SIZE - strlen(word)) / 2; i++) printf(" ");
+    int i;
+    for (i = 0; i < (TERMINAL_CHAR_SIZE - strlen(word)) / 2; i++) printf(" ");
     printf("%s", word);
     printf("\n");
 }
 
 void printColumn(char *word) {
-    for (int i = 0; i < ceil((((double)TERMINAL_CHAR_SIZE - 4 )/ 3 - strlen(word))) / 2; i++) printf(" ");
+    int i;
+    for (i = 0; i < ceil((((double)TERMINAL_CHAR_SIZE - 4 )/ 3 - strlen(word))) / 2; i++) printf(" ");
     printf("%s", word);
-    for (int i = 0; i < ((TERMINAL_CHAR_SIZE - 4 )/ 3 - strlen(word)) / 2; i++) printf(" ");
+    for (i = 0; i < ((TERMINAL_CHAR_SIZE - 4 )/ 3 - strlen(word)) / 2; i++) printf(" ");
     printf("|");
 }
 
@@ -143,28 +146,31 @@ void fillRightCol(
     int arrowMemory, int *numberOfVars)
     {
     char arrowHandler[DBL_CHAR_LENGTH];
-     int printMemStart = 0;
-     int i,j;
+    int printMemStart = 0;
+    int i,j;
     sprintf(rightColScheme[0], "");
     j = 0;
     if (arrowMemory > TERMINAL_LENGTH / 4 + 2 * printMemStart)
         printMemStart += arrowMemory -  TERMINAL_LENGTH / 4;
         else if (arrowMemory < printMemStart) printMemStart = printMemStart - TERMINAL_LENGTH / 4 > 0 ? arrowMemory - TERMINAL_LENGTH / 4 : 0;
     for (i = 2 * printMemStart; i < TERMINAL_LENGTH + 2 * printMemStart; i+= 2) {
-        if (i / 2 >= *numberOfVars) {
+        if (i / 2 >= *numberOfVars) 
+        {
             sprintf(rightColScheme[i + 1 - 2 * printMemStart], "");
             sprintf(rightColScheme[i + 2 - 2 * printMemStart], "");
-            } else {
+        } 
+        else 
+        {
         strcpy(arrowHandler, "");
         if (arrowMemory == i / 2) strcpy(arrowHandler, "->");
         sprintf(rightColScheme[i + 1 - 2 * printMemStart], 
-        "%2s %10d %15s %10d",
+        "%2s %10d %15s %10x",
         arrowHandler,
         &(memory[i / 2]),
         hasLabel(i / 2, memoryLabels, MAX_CODE_LENGTH) ? memoryLabels[findMemLabelIndexByLine(i / 2, memoryLabels, MAX_CODE_LENGTH)].label : " ", 
         memory[i / 2]);
         sprintf(rightColScheme[i + 2 - 2 * printMemStart], "");
-    }
+        }
     }
 }
 void fillMidCol(
@@ -175,7 +181,7 @@ void fillMidCol(
     for (i = 0; i < REG_TERM_DIST; i++) sprintf(middColScheme[i], "");
     sprintf(middColScheme[i], "------------------------------");
         for (i = 1; i < 2* NUMBER_OF_REGS; i+=2) {
-        sprintf(middColScheme[i + REG_TERM_DIST], "%02d         |          %08d", i / 2, registers[i / 2]); 
+        sprintf(middColScheme[i + REG_TERM_DIST], "%02d         |          %08x", i / 2, registers[i / 2]); 
         sprintf(middColScheme[i + 1 + REG_TERM_DIST], "------------------------------");      
     }
     i += REG_TERM_DIST;
@@ -193,7 +199,7 @@ void printPanel(
     int *memory, MemLabel *memoryLabels, 
     int *numberOfVars, int arrowMemory)
 {
-    int i, j;
+    int i;
     char middColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3];
     char leftColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3];
     char rightColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3];
@@ -208,8 +214,9 @@ void printPanel(
     printLine(TERMINAL_CHAR_SIZE);
     printRow("CODE", "REGISTERS", "MEMORY");
     printLine(TERMINAL_CHAR_SIZE);
-    for (int i = 0; i < TERMINAL_LENGTH; i++)
+    for (i = 0; i < TERMINAL_LENGTH; i++)
     printRow(leftColScheme[i], middColScheme[i], rightColScheme[i]);
+    printLine(TERMINAL_CHAR_SIZE);
 }
 
 void commandController(char *executionMode, bool *isFinished)

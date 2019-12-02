@@ -145,7 +145,6 @@ void ST_directive(int *registers, char (*words)[MAX_WORD_LINE_LENGTH], int *memo
     {
         int *secWordHandler;
         secWordHandler = parseSecondWord(secondWord, registers);
-        printf("secyword %d %d", secWordHandler, registers[0]);
         *secWordHandler = registers[parseToDecimal(words[1])];
         return;
     }
