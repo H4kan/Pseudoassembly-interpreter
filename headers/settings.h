@@ -47,6 +47,9 @@
 
 #define ENDING_WORDS "KONIEC"
 #define SOURCE_DIRECTORY_PATH "src/"
+
+#define TERMINAL_CHAR_SIZE 271
+#define TERMINAL_LENGTH 100
 /* OTHER END */
 
 typedef struct Label Label;

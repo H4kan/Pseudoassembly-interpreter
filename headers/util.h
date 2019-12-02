@@ -218,22 +218,6 @@ int extractValueFromIntegerString(char *word)
     return parseToDecimal(extractedValue);
 }
 
-bool isDirective(char *word)
-{
-    /* DECLARATION SECTION START */
-    int i;
-    /* DECLARATION SECTION END */
-
-    for (i = 0; i < NUMBER_OF_DIRS; i++)
-    {
-        char directiveHandler[DIR_CHAR_LENGTH - 1];
-        strcpy(directiveHandler, directives[i]);
-        if (stringsToBeSame(directiveHandler, word))
-            return true;
-    }
-    return false;
-};
-
 void splitLineIntoWords(char *codeLine, char (*words)[COMMON_WORD_LENGTH])
 {
     /* DECLARATION SECTION START */

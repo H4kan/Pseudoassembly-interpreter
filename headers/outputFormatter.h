@@ -55,6 +55,22 @@ bool stringsToBeSame(char *firstWord, char *secondWord)
     return true;
 }
 
+bool isDirective(char *word)
+{
+    /* DECLARATION SECTION START */
+    int i;
+    /* DECLARATION SECTION END */
+
+    for (i = 0; i < NUMBER_OF_DIRS; i++)
+    {
+        char directiveHandler[DIR_CHAR_LENGTH - 1];
+        strcpy(directiveHandler, directives[i]);
+        if (stringsToBeSame(directiveHandler, word))
+            return true;
+    }
+    return false;
+};
+
 void showLabels(Label *labels, int labelLength)
 {
     /* DECLARATION SECTION START */
@@ -201,6 +217,80 @@ void printTracked(bool trackRegisters, bool trackStatus, bool trackMemory, char 
         showRegisters(registers);
     if (trackMemory)
         showMemory(memory, memoryLabels, numberOfVars);
+}
+
+void printLine(int lineLength) {
+    for (int i = 0; i < lineLength; i++)
+        printf("-");
+    printf("\n");
+}
+
+void printMiddle(char *word) {
+    
+    for (int i = 0; i < (TERMINAL_CHAR_SIZE - strlen(word) + 20) / 2; i++)
+        printf(" ");
+    printf("%s", word);
+    printf("\n");
+}
+
+void printColumn(char *word) {
+    for (int i = 0; i < ceil((((double)TERMINAL_CHAR_SIZE - 4 )/ 3 - strlen(word))) / 2; i++)
+        printf(" ");
+    printf("%s", word);
+    for (int i = 0; i < ((TERMINAL_CHAR_SIZE - 4 )/ 3 - strlen(word)) / 2; i++)
+        printf(" ");
+    printf("|");
+}
+
+void printRow(char *word1, char *word2, char *word3) {
+    printf("|");
+    printColumn(word1);
+    printColumn(word2);
+    printColumn(word3);
+    printf("\n");
+}
+
+
+void printEverything(int *registers, char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH], int codeLength, int nextLineToExec)
+{
+    int i, j;
+    char middColScheme[TERMINAL_LENGTH][100];
+    char leftColScheme[TERMINAL_LENGTH][100];
+
+    sprintf(middColScheme[0], "------------------------------");
+    for (i = 1; i < 2* NUMBER_OF_REGS; i+=2) {
+        sprintf(middColScheme[i], "%02d         |          %08d", i / 2, registers[i / 2]); 
+        sprintf(middColScheme[i + 1], "------------------------------");      
+    }
+    while (i < TERMINAL_LENGTH) {sprintf(middColScheme[i], " "); i++;};
+
+    sprintf(leftColScheme[0], "");
+    for (i = 0; i < 2* codeLength; i+=2) {
+        for (j = 0; j < MAX_WORD_LINE_LENGTH; j++)
+            if ((int)(words[i / 2][j][strlen(words[i / 2][j]) - 1]) == LINEFEED_ASCII) 
+                words[i / 2][j][strlen(words[i / 2][j]) - 1] = '\0';
+        j = 0;
+        char wordHandler[COMMON_WORD_LENGTH] = "";
+        if (!isDirective(words[i / 2][j])) {strcpy(wordHandler, words[i / 2][j]); j++;}
+        sprintf(leftColScheme[i + 1], 
+        "%6s" BLU "%15s" YEL "%10s" RESET "%25s %15s", "->", 
+        wordHandler, 
+        words[i / 2][j], 
+        words[i / 2][j + 1], 
+        words[i / 2][j + 2]);
+        sprintf(leftColScheme[i + 2], " ");
+    }
+    while (i < TERMINAL_LENGTH) {sprintf(leftColScheme[i], " "); i++;}
+    system("clear");
+    printLine(TERMINAL_CHAR_SIZE);
+    printMiddle(BLU "Pseudoassembly Interpreter " RESET YEL "1.0" RESET);
+    printf("\n\n");
+    printLine(TERMINAL_CHAR_SIZE);
+    printRow("CODE", "REGISTERS", "MEMORY");
+    printLine(TERMINAL_CHAR_SIZE);
+    for (int i = 0; i < 36; i++)
+    printRow(leftColScheme[i], middColScheme[i], "");
+
 }
 
 void commandController(bool *trackRegisters, bool *trackStatus, bool *trackMemory, char *stateRegister, int *memory, MemLabel *memoryLabels, int *numberOfVars, Label *labels, int labelLength, int *registers, char *executionMode, bool *isFinished)

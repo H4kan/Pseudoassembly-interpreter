@@ -248,7 +248,7 @@ void DC_directive(char (*words)[MAX_WORD_LINE_LENGTH], int lineIndex, Label *lab
 
         newNumberValue = extractValueFromIntegerString(wordWithoutSize);
         *numberOfVars = *numberOfVars + arraySize;
-        memory = (int *)realloc(*memory, *numberOfVars * sizeof(int));
+        *memory = (int *)realloc(*memory, *numberOfVars * sizeof(int));
         for (i = 0; i < arraySize; i++)
         {
             (*memory)[*numberOfVars - arraySize + i] = newNumberValue;
