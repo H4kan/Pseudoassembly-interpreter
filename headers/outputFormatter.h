@@ -74,16 +74,16 @@ void printLine(int lineLength) {
 
 void printMiddle(char *word) {
     int i;
-    for (i = 0; i < (TERMINAL_CHAR_SIZE - strlen(word)) / 2; i++) printf(" ");
+    for (i = 0; i < (TERMINAL_SIZE - strlen(word)) / 2; i++) printf(" ");
     printf("%s", word);
     printf("\n");
 }
 
 void printColumn(char *word) {
     int i;
-    for (i = 0; i < ceil((((double)TERMINAL_CHAR_SIZE - 4 )/ 3 - strlen(word))) / 2; i++) printf(" ");
+    for (i = 0; i < ceil((((double)TERMINAL_SIZE - 4 )/ 3 - strlen(word))) / 2; i++) printf(" ");
     printf("%s", word);
-    for (i = 0; i < ((TERMINAL_CHAR_SIZE - 4 )/ 3 - strlen(word)) / 2; i++) printf(" ");
+    for (i = 0; i < ((TERMINAL_SIZE - 4 )/ 3 - strlen(word)) / 2; i++) printf(" ");
     printf("|");
 }
 
@@ -108,7 +108,7 @@ int findMemLabelIndexByLine(int lineIndex, MemLabel *memoryLabels, int length) {
     }
 }
 void fillLeftCol(
-    char leftColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3], 
+    char leftColScheme[TERMINAL_LENGTH][TERMINAL_SIZE / 3], 
     char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH], 
     int nextLineToExec){
     char arrowHandler[DBL_CHAR_LENGTH];
@@ -141,7 +141,7 @@ void fillLeftCol(
 }
 
 void fillRightCol(
-    char rightColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3], 
+    char rightColScheme[TERMINAL_LENGTH][TERMINAL_SIZE / 3], 
     int *memory, MemLabel *memoryLabels,
     int arrowMemory, int *numberOfVars)
     {
@@ -174,7 +174,7 @@ void fillRightCol(
     }
 }
 void fillMidCol(
-    char middColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3], 
+    char middColScheme[TERMINAL_LENGTH][TERMINAL_SIZE / 3], 
     int *registers, char *stateRegister)
     {
         int i;
@@ -200,23 +200,23 @@ void printPanel(
     int *numberOfVars, int arrowMemory)
 {
     int i;
-    char middColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3];
-    char leftColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3];
-    char rightColScheme[TERMINAL_LENGTH][TERMINAL_CHAR_SIZE / 3];
+    char middColScheme[TERMINAL_LENGTH][TERMINAL_SIZE / 3];
+    char leftColScheme[TERMINAL_LENGTH][TERMINAL_SIZE / 3];
+    char rightColScheme[TERMINAL_LENGTH][TERMINAL_SIZE / 3];
     char arrowHandler[DBL_CHAR_LENGTH];
     fillLeftCol(leftColScheme, words, nextLineToExec);
     fillRightCol(rightColScheme, memory, memoryLabels, arrowMemory, numberOfVars);
     fillMidCol(middColScheme, registers, stateRegister);
-    system("clear");
-    printLine(TERMINAL_CHAR_SIZE);
+    system(CLEAR_CMD);
+    printLine(TERMINAL_SIZE);
     printMiddle("Pseudoassembly Interpreter 1.0");
     printMiddle("Author: Szymon Sieradzki");
-    printLine(TERMINAL_CHAR_SIZE);
+    printLine(TERMINAL_SIZE);
     printRow("CODE", "REGISTERS", "MEMORY");
-    printLine(TERMINAL_CHAR_SIZE);
+    printLine(TERMINAL_SIZE);
     for (i = 0; i < TERMINAL_LENGTH; i++)
     printRow(leftColScheme[i], middColScheme[i], rightColScheme[i]);
-    printLine(TERMINAL_CHAR_SIZE);
+    printLine(TERMINAL_SIZE);
 }
 
 void commandController(char *executionMode, bool *isFinished)

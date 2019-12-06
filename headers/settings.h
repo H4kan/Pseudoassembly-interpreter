@@ -48,8 +48,10 @@
 #define ENDING_WORDS "KONIEC"
 #define SOURCE_DIRECTORY_PATH "src/"
 
-#define TERMINAL_CHAR_SIZE 271
-#define TERMINAL_LENGTH 56
+// WIN_TERMINAL_SIZE 235
+// BASH_TERMINAL_SIZE 271
+#define TERMINAL_SIZE 235 
+#define TERMINAL_LENGTH 54
 #define REG_TERM_DIST 6
 
 #define NEXT_CMD "next"
@@ -59,6 +61,8 @@
 #define DEFAULT_MODE "default"
 #define DEBUG_MODE "debug"
 #define DEFAULT_SOURCE_FILENAME "sample.txt"
+
+#define CLEAR_CMD "cls"
 /* OTHER END */
 
 typedef struct Label Label;

@@ -158,5 +158,6 @@ void executeProgram(char (*words)[MAX_WORD_LINE_LENGTH][COMMON_WORD_LENGTH],
                codeLength, nextLineToExec, 
                *memory, memoryLabels, 
                numberOfVars, arrowMemory);
+    system("pause");
 }
 
